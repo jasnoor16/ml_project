@@ -1,55 +1,40 @@
-import os
+import yaml
+import mlflow.sklearn
 import numpy as np
-import joblib
-import matplotlib.pyplot as plt
-from utils.model_utils import evaluate_model
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
-class Evaluator:
-    """ Evaluator class to handle model performance tracking """
+# Load parameters from YAML
+with open("configs/parameters.yml", "r") as f:
+    params = yaml.safe_load(f)
 
-    def __init__(self):
-        """ Initialize paths and load test data """
-        self.processed_dir = "./data/processed/"
-        self.models_dir = "./models/"
-        self.results_dir = "./results/"
-        os.makedirs(self.results_dir, exist_ok=True)  # Ensure results directory exists
+# Set MLflow Tracking URI
+mlflow.set_tracking_uri(params["mlflow"]["tracking_uri"])
 
-        # Load test data
-        self.X_test = np.load(os.path.join(self.processed_dir, "X_test.npy"))
-        self.y_test = np.load(os.path.join(self.processed_dir, "y_test.npy"))
+# Load test data
+X_test = np.load("./data/processed/X_test.npy")
+y_test = np.load("./data/processed/y_test.npy")
 
-    def evaluate_and_plot(self, model_name):
-        """ Evaluate a model and save its performance metrics """
-        model_path = os.path.join(self.models_dir, f"{model_name}.pkl")
-        if not os.path.exists(model_path):
-            print(f"⚠️ Model {model_name} not found. Skipping...")
-            return
+# Load model from MLflow using dynamic experiment name and run ID
+experiment_name = params["mlflow"]["experiment_name"]
+run_id = params["mlflow"].get("run_id", "your-default-run-id")  # Replace if needed
+model_uri = f"runs:/{run_id}/Linear_Regression"
 
-        model = joblib.load(model_path)
-        mae, rmse, r2 = evaluate_model(model, self.X_test, self.y_test)
+# Load the trained model
+try:
+    model = mlflow.sklearn.load_model(model_uri)
+except Exception as e:
+    print(f"Error loading model: {e}")
+    exit(1)
 
-        print(f"\n{model_name} Performance:")
-        print(f"   MAE: {mae:.2f}")
-        print(f"   RMSE: {rmse:.2f}")
-        print(f"   R² Score: {r2:.4f}")
+# Make predictions
+y_pred = model.predict(X_test)
 
-        # Generate and save bar plot
-        plt.figure(figsize=(6, 4))
-        metrics = {"MAE": mae, "RMSE": rmse, "R² Score": r2}
-        plt.bar(metrics.keys(), metrics.values(), color=['blue', 'red', 'green'])
-        plt.ylabel("Error")
-        plt.title(f"{model_name} Performance")
-        plt.savefig(os.path.join(self.results_dir, f"{model_name}_performance.png"))
-        plt.close()
+# Evaluate the model
+mae = mean_absolute_error(y_test, y_pred)
+rmse = np.sqrt(mean_squared_error(y_test, y_pred))
+r2 = r2_score(y_test, y_pred)
 
-    def run_evaluation(self):
-        """ Run model evaluation for all models """
-        print("\nEvaluating Models...")
-        for model in ["linear_model", "random_forest_model", "decision_tree_model"]:
-            self.evaluate_and_plot(model)
-
-        print("✅ Model evaluation completed!")
-
-if __name__ == "__main__":
-    evaluator = Evaluator()
-    evaluator.run_evaluation()
+print(f"Model Evaluation:")
+print(f"MAE: {mae:.2f}")
+print(f"RMSE: {rmse:.2f}")
+print(f"R² Score: {r2:.4f}")

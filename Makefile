@@ -16,9 +16,13 @@ preprocess:
 train:
 	$(VENV_DIR)/bin/python src/train.py
 
+# Evaluate the model
+evaluate:
+	$(VENV_DIR)/bin/python src/evaluate.py
+
 # Run predictions
 predict:
 	$(VENV_DIR)/bin/python src/predict.py
 
 # Run everything
-all: setup preprocess train predict
+all: setup preprocess train evaluate predict
