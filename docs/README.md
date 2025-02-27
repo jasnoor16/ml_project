@@ -3,17 +3,14 @@
 ## **Project Overview**
 This project focuses on **predicting donation bag collection for the Alberta Food Drive** using machine learning techniques. The goal is to analyze various factors such as volunteer efforts, locations, and past trends to create an optimized prediction model. The project follows **best practices for reproducibility, modularity, and maintainability**, ensuring it can be deployed in a real-world setting.
 
-Our team members:
+### **Team Members**
 - **Jasnoor Kaur Khangura**
 - **Deeksha LNU**
 - **Ravneet Singh Plaha**
 - **Rahul Singla**
 
----
-
 ## **Project Structure**
-The project follows **MLOps** structure, ensuring that the code is **modular, reusable, and scalable**. Below is the directory structure:
-
+The project follows **MLOps principles**, ensuring that the code is **modular, reusable, and scalable**. Below is the directory structure:
 
 ml_project/
 ├── data/                # Stores datasets (raw, processed, external)
@@ -36,67 +33,57 @@ ml_project/
 ├── docs/                # Documentation folder
 │   ├── README.md        # Project documentation
 │   ├── user_guide.md    # Step-by-step guide for using this project
+├── .dvcignore           # Files to ignore for DVC
 ├── requirements.txt     # Dependencies required to run the project
 ├── Makefile             # Automates setup and training
-└── .gitignore           # Exclude unnecessary files (not required for now)
+└── .gitignore           # Exclude unnecessary files
 
-Installation Guide
-To set up this project, follow these steps:
+## **Installation Guide**
+Follow these steps to set up and run the project:
 
-
-1. Create a Virtual Environment
-
-python3 -m venv venv
+### **1. Create a Virtual Environment**
+python3 -m .venv venv
 source venv/bin/activate  # On macOS/Linux
 venv\Scripts\activate     # On Windows
 
-2. Install Dependencies
-Run the following command to install all required libraries:
-
+### **2. Install Dependencies**
 pip install -r requirements.txt
 
-**Usage Guide**
+### **3. Initialize DVC and Track Data**
+dvc init
+dvc add data/raw
+dvc add data/processed
+git add .
+git commit -m "Initialized DVC and tracked data"
+git push origin main
 
-1. Data Preprocessing
-Run the preprocessing script to clean and format the data:
+### **4. Configure DVC Remote Storage (Google Drive)**
+dvc remote add -d gdrive_remote gdrive://1gNqMDp2dxr521HgqHt2B0iALIdOhTEIh
+dvc push
 
+## **Usage Guide**
+### **1. Data Preprocessing**
 python src/preprocess.py
-This script reads cleaned_data_2023.csv and cleaned_data_2024.csv.
-It converts categorical data into numerical values.
-It saves processed data in data/processed/.
 
-2. Model Training
-Train the machine learning models using:
-
+### **2. Model Training**
 python src/train.py
-This script loads the processed training data.
-It trains Linear Regression, Random Forest, and Decision Tree models using the hyperparameters in configs/train_config.yaml.
-The trained model is saved in the models/ directory.
 
-3. Model Evaluation
-Evaluate the trained models using:
-
+### **3. Model Evaluation**
 python src/evaluate.py
-This script loads test data and evaluates the models.
-It calculates MAE (Mean Absolute Error), RMSE (Root Mean Squared Error), and R² Score for each model.
-The results are displayed in the terminal.
 
-4. Making Predictions
-Make predictions using the best-performing model:
-
+### **4. Making Predictions**
 python src/predict.py
-The script loads the trained model from models/.
-It predicts donation bag collections for 2024.
-The predictions are saved in data/processed/predictions.npy.
 
-Configuration Files
-The project uses YAML configuration files for flexibility.
+## **MLflow Setup and Experiment Tracking**
+### **1. Start MLflow UI**
+mlflow ui --port 8000
 
-1. Training Configuration (configs/train_config.yaml)
-This file contains the hyperparameters for each model. Example:
+### **2. Retrieve Run ID**
+mlflow models serve -m "runs:/<RUN_ID>/model"
+Replace `<RUN_ID>` with the actual **run ID** from the MLflow UI.
 
-yaml
-
+## **Configuration Files**
+### **1. Training Configuration (`configs/train_config.yaml`)**
 random_forest:
   n_estimators: 100
   max_depth: Null
@@ -105,42 +92,45 @@ random_forest:
 decision_tree:
   max_depth: Null
   random_state: 42
-This allows easy modification of model parameters without changing the code.
 
-2. Prediction Configuration (configs/predict_config.yaml)
-This file specifies which trained model to use for predictions:
-
-yaml
-
+### **2. Prediction Configuration (`configs/predict_config.yaml`)**
 default_model: "linear"
 output_directory: "./data/processed/"
-The default model can be changed to "linear" or "decision_tree".
 
-Makefile Automation
-To simplify execution, a Makefile is provided.
-
-## Run Preprocessing, Training, and Evaluation Together
-## RUN make all
+## **Makefile Automation**
+### **Run Everything (Preprocessing, Training, Evaluation)**
 make all
 
-Runs preprocessing, model training, and evaluation.
-Run Individual Steps
+### **Run Individual Steps**
+make preprocess  # Runs preprocessing
+make train       # Trains the models
+make evaluate    # Evaluates models
+make predict     # Runs predictions
 
-make preprocess  # Only runs preprocessing
-make train       # Only trains the models
-make evaluate    # Only evaluates models
-make predict     # Only makes predictions
+## **Model Performance**
+| Model              | MAE   | RMSE  | R² Score |
+|--------------------|------|------|---------|
+| **Linear Regression** | **14.51** | **32.65** | **0.0696** |
+| **Random Forest** | 15.11 | 32.96 | 0.0515 |
+| **Decision Tree** | 21.95 | 38.14 | -0.2694 |
 
-Model Performance
-After evaluation, the model performances were:
+## **Final Model Selection**
+Since **Linear Regression** had the lowest RMSE and the highest R² Score, it was selected as the final model.
 
-Model	MAE	RMSE	R² Score
-Linear Regression	14.51	32.65	0.0696
-Random Forest	15.11	32.96	0.0515
-Decision Tree	21.95	38.14	-0.2694
-Based on these metrics, Linear Regression performed the best.
-
-Final Model Selection
-Since Linear Regression has the lowest RMSE and highest R² Score, it was chosen as the final model.
-The trained model is saved as:
 models/linear_model.pkl
+
+## **Git Version Control**
+### **1. Push Code Changes to GitHub**
+git add .
+git commit -m "Updated training and evaluation scripts"
+git push origin main
+
+### **2. Push Data Changes to DVC**
+dvc push
+
+## **DVC Remote Storage Link**
+Our DVC-tracked dataset is stored in **Google Drive** and can be accessed using the configured remote storage.
+
+
+
+### **🚀 Project Completed Successfully!**

@@ -1,0 +1,15 @@
+artifact_uri: mlflow-artifacts:/757100552648002188/2097b74bb92f41f8987cfec0a8afe1da/artifacts
+end_time: 1740674724677
+entry_point_name: ''
+experiment_id: '757100552648002188'
+lifecycle_stage: active
+run_id: 2097b74bb92f41f8987cfec0a8afe1da
+run_name: Decision_Tree
+run_uuid: 2097b74bb92f41f8987cfec0a8afe1da
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1740674720838
+status: 3
+tags: []
+user_id: jasnoor

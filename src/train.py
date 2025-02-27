@@ -2,18 +2,17 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-import yaml
 import numpy as np
 import mlflow
 import mlflow.sklearn
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.tree import DecisionTreeRegressor
-from ml_utils.model_utils import save_model, evaluate_model
+from ml_utils.model_utils import save_model, evaluate_model  # No 'src' needed
 
 class Trainer:
     def __init__(self):
-        """Initialize paths, load data, and configuration."""
+        """Initialize paths and load data"""
         self.processed_dir = "./data/processed/"
         self.models_dir = "./models/"
         os.makedirs(self.models_dir, exist_ok=True)
@@ -29,21 +28,25 @@ class Trainer:
             print(f"Error loading data: {e}")
             exit(1)
 
-        # Load configuration
-        try:
-            with open("./configs/parameters.yml", "r") as file:
-                self.config = yaml.safe_load(file)
-            print("Configuration loaded successfully.")
-        except Exception as e:
-            print(f"Error loading configuration: {e}")
-            exit(1)
+        # MLflow Tracking Setup
+        self.mlflow_tracking_uri = "http://127.0.0.1:8000"
+        self.experiment_name = "ML_Project_Training"
+        mlflow.set_tracking_uri(self.mlflow_tracking_uri)
+        mlflow.set_experiment(self.experiment_name)
 
-        # Set up MLflow Tracking
-        mlflow.set_tracking_uri(self.config["mlflow"]["tracking_uri"])
-        mlflow.set_experiment(self.config["mlflow"]["experiment_name"])
+        # Model Parameters (directly set here instead of parameters.yml)
+        self.random_forest_params = {
+            "n_estimators": 100,
+            "max_depth": None,
+            "random_state": 42
+        }
+        self.decision_tree_params = {
+            "max_depth": None,
+            "random_state": 42
+        }
 
     def train_model(self, model_name, model, params=None):
-        """Train a model and log it to MLflow."""
+        """Train a model and log it to MLflow"""
         print(f"Training {model_name}...")
         with mlflow.start_run(run_name=model_name):
             if params:
@@ -61,27 +64,22 @@ class Trainer:
             mlflow.log_metric("R2_Score", r2)
 
     def train_models(self):
-        """Train all models defined in parameters.yml."""
+        """Train all models"""
         print("\nStarting Model Training...\n")
 
-        # Train Linear Regression
         linear_model = LinearRegression()
         self.train_model("Linear_Regression", linear_model)
 
-        # Train Random Forest
-        rf_params = self.config["train"].get("random_forest", {})
-        rf_model = RandomForestRegressor(**rf_params)
-        self.train_model("Random_Forest", rf_model, rf_params)
+        rf_model = RandomForestRegressor(**self.random_forest_params)
+        self.train_model("Random_Forest", rf_model, self.random_forest_params)
 
-        # Train Decision Tree
-        dt_params = self.config["train"].get("decision_tree", {})
-        dt_model = DecisionTreeRegressor(**dt_params)
-        self.train_model("Decision_Tree", dt_model, dt_params)
+        dt_model = DecisionTreeRegressor(**self.decision_tree_params)
+        self.train_model("Decision_Tree", dt_model, self.decision_tree_params)
 
         print("\nAll models trained successfully.\n")
 
     def run_training(self):
-        """Run training pipeline."""
+        """Run training pipeline"""
         self.train_models()
 
 if __name__ == "__main__":

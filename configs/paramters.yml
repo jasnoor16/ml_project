@@ -1,0 +1,25 @@
+# parameters.yml - Contains API keys and other sensitive information
+dvc:
+  remote: "gdrive"
+  client_id: "868730088389-ajun2v164n53ejjhofr7hvedvs9uj6q8.apps.googleusercontent.com"
+  client_secret: "GOCSPX-GrB4ZqTCT]nyF-JAnhRFOb37uYL"
+  folder_id: "1gNqMDp2dxr521HgqHt2B0iALIdOhTEIh"
+  
+
+mlflow:
+  experiment_name: "ML_Project_Training"
+  tracking_uri: "http://127.0.0.1:8000"
+  artifact_location: "./mlruns"
+
+train:
+  random_forest:
+    n_estimators: 100
+    max_depth: null
+    random_state: 42
+  decision_tree:
+    max_depth: null
+    random_state: 42
+
+predict:
+  default_model: "linear"
+  output_directory: "./data/processed/"
