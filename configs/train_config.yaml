@@ -1,0 +1,13 @@
+random_seed: 42
+test_size: 0.2
+
+random_forest:
+  n_estimators: 100
+  max_depth: null #  Change "None" to null
+  random_state: 42
+
+decision_tree:
+  max_depth: null # Change "None" to null
+  random_state: 42
+
+linear_regression: {}
