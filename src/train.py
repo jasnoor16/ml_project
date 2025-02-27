@@ -1,92 +1,87 @@
+import sys
 import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 import yaml
 import numpy as np
-import joblib
-import matplotlib.pyplot as plt
+import mlflow
+import mlflow.sklearn
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.tree import DecisionTreeRegressor
-from utils.model_utils import save_model, evaluate_model
+from ml_utils.model_utils import save_model, evaluate_model  # No 'src' needed
 
 class Trainer:
-    """ Trainer class to handle model training and evaluation """
-
     def __init__(self):
-        """ Initialize paths and load data """
+        """Initialize paths and load data"""
         self.processed_dir = "./data/processed/"
         self.models_dir = "./models/"
-        self.results_dir = "./results/"
-        os.makedirs(self.models_dir, exist_ok=True)  # Ensure models directory exists
-        os.makedirs(self.results_dir, exist_ok=True)  # Ensure results directory exists
+        os.makedirs(self.models_dir, exist_ok=True)
 
-        # Load preprocessed training data
-        self.X_train = np.load(os.path.join(self.processed_dir, "X_train.npy"))
-        self.y_train = np.load(os.path.join(self.processed_dir, "y_train.npy"))
+        # Load preprocessed data
+        try:
+            self.X_train = np.load(os.path.join(self.processed_dir, "X_train.npy"))
+            self.y_train = np.load(os.path.join(self.processed_dir, "y_train.npy"))
+            self.X_test = np.load(os.path.join(self.processed_dir, "X_test.npy"))
+            self.y_test = np.load(os.path.join(self.processed_dir, "y_test.npy"))
+            print("✅ Data loaded successfully!")
+        except Exception as e:
+            print(f"❌ Error loading data: {e}")
+            exit(1)
 
-        # Load preprocessed test data
-        self.X_test = np.load(os.path.join(self.processed_dir, "X_test.npy"))
-        self.y_test = np.load(os.path.join(self.processed_dir, "y_test.npy"))
+        # Load configuration
+        try:
+            with open("./configs/train_config.yaml", "r") as file:
+                self.config = yaml.safe_load(file)
+            print("✅ Configuration loaded successfully!")
+        except Exception as e:
+            print(f"❌ Error loading configuration: {e}")
+            exit(1)
 
-        # Load YAML configuration file
-        with open("./configs/train_config.yaml", "r") as file:
-            self.config = yaml.safe_load(file)
+        # Set up MLflow Tracking
+        mlflow.set_tracking_uri("http://127.0.0.1:8000")
+        mlflow.set_experiment("ML_Project_Training")
+
+    def train_model(self, model_name, model, params=None):
+        """ Train a model and log it to MLflow """
+        print(f"🔹 Training {model_name}...")
+        with mlflow.start_run(run_name=model_name):
+            if params:
+                mlflow.log_params(params)
+
+            model.fit(self.X_train, self.y_train)
+            save_model(model, model_name)
+
+            mlflow.sklearn.log_model(model, model_name)
+
+            mae, rmse, r2 = evaluate_model(model, self.X_test, self.y_test)
+
+            mlflow.log_metric("MAE", mae)
+            mlflow.log_metric("RMSE", rmse)
+            mlflow.log_metric("R2_Score", r2)
 
     def train_models(self):
-        """ Train machine learning models and save them """
+        """ Train all models """
+        print("\n🚀 Starting Model Training...\n")
 
-        print("Training Linear Regression Model...")
         linear_model = LinearRegression()
-        linear_model.fit(self.X_train, self.y_train)
-        save_model(linear_model, "linear_model")
+        self.train_model("Linear_Regression", linear_model)
 
-        print("Training Random Forest Model...")
-        rf_params = self.config["random_forest"]
+        rf_params = self.config.get("random_forest", {})
         rf_model = RandomForestRegressor(**rf_params)
-        rf_model.fit(self.X_train, self.y_train)
-        save_model(rf_model, "random_forest_model")
+        self.train_model("Random_Forest", rf_model, rf_params)
 
-        print("Training Decision Tree Model...")
-        dt_params = self.config["decision_tree"]
+        dt_params = self.config.get("decision_tree", {})
         dt_model = DecisionTreeRegressor(**dt_params)
-        dt_model.fit(self.X_train, self.y_train)
-        save_model(dt_model, "decision_tree_model")
+        self.train_model("Decision_Tree", dt_model, dt_params)
 
-        print("✅ Model training completed!")
+        print("\n✅ All models trained successfully!\n")
 
-    def evaluate_and_plot(self, model_name):
-        """ Evaluate models and generate performance plots """
-        model_path = os.path.join(self.models_dir, f"{model_name}.pkl")
-        if not os.path.exists(model_path):
-            print(f"⚠️ Model {model_name} not found. Skipping...")
-            return
-
-        model = joblib.load(model_path)
-        mae, rmse, r2 = evaluate_model(model, self.X_test, self.y_test)
-
-        print(f"\n{model_name} Performance:")
-        print(f"   MAE: {mae:.2f}")
-        print(f"   RMSE: {rmse:.2f}")
-        print(f"   R² Score: {r2:.4f}")
-
-        # Generate and save bar plot
-        plt.figure(figsize=(6, 4))
-        metrics = {"MAE": mae, "RMSE": rmse, "R² Score": r2}
-        plt.bar(metrics.keys(), metrics.values(), color=['blue', 'red', 'green'])
-        plt.ylabel("Error")
-        plt.title(f"{model_name} Performance")
-        plt.savefig(os.path.join(self.results_dir, f"{model_name}_performance.png"))
-        plt.close()
-
-    def run_training_and_evaluation(self):
-        """ Run the full training and evaluation pipeline """
+    def run_training(self):
+        """ Run training pipeline """
         self.train_models()
-
-        print("\nEvaluating Models...")
-        for model in ["linear_model", "random_forest_model", "decision_tree_model"]:
-            self.evaluate_and_plot(model)
-
-        print("✅ Training and evaluation completed!")
 
 if __name__ == "__main__":
     trainer = Trainer()
-    trainer.run_training_and_evaluation()
+    trainer.run_training()
+    print("\n🎯 Training & Evaluation Completed! Check MLflow UI.")
