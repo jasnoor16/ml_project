@@ -22,6 +22,11 @@ def project_info():
         "note": "Send JSON payload to /v1/predict or /v2/predict for predictions."
     })
 
+@app.route('/health_status', methods=['GET'])
+def health_status():
+    return jsonify({"status": "API is running!"}), 200
+
+
 # Run Flask app
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=9999, debug=True)
