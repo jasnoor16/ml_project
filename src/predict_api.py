@@ -9,22 +9,30 @@ def home():
     return "<h1>Welcome to the ML Model Prediction API</h1>"
 
 # API Information Endpoint
-@app.route('/ml_project_home')
+@app.route('/ml_project_home', methods=['GET'])
 def project_info():
     return jsonify({
-        "message": "This API serves machine learning models through REST endpoints.",
-        "endpoints": {
+        "message": "Welcome to the ML Model Prediction API!",
+        "description": "This API serves machine learning models through REST endpoints. "
+                       "It allows users to send data and receive predictions using machine learning models.",
+        "available_endpoints": {
             "/v1/predict": "Predict using Model Version 1",
             "/v2/predict": "Predict using Model Version 2",
             "/health_status": "Check API health status",
             "/ml_project_home": "API documentation and usage"
         },
-        "note": "Send JSON payload to /v1/predict or /v2/predict for predictions."
+        "example_request_payload": {
+            "features": [5.1, 3.5, 1.4, 0.2]  # Example feature values for a prediction request
+        }
     })
+
 
 @app.route('/health_status', methods=['GET'])
 def health_status():
     return jsonify({"status": "API is running!"}), 200
+
+
+
 
 
 # Run Flask app
