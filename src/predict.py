@@ -3,12 +3,14 @@ import os
 import numpy as np
 import joblib
 import yaml
+import mlflow
+import mlflow.pyfunc
+import argparse
 import matplotlib.pyplot as plt
 import pandas as pd
 
 # Define directories
 processed_dir = "./data/processed/"
-models_dir = "./models/"
 results_dir = "./results/"
 os.makedirs(results_dir, exist_ok=True)  # Ensure results directory exists
 
@@ -20,14 +22,27 @@ with open("./configs/predict_config.yaml", "r") as file:
 X_test = np.load(os.path.join(processed_dir, "X_test.npy"))  # Features
 y_test = np.load(os.path.join(processed_dir, "y_test.npy"))  # Actual values
 
-# Load the best model (Linear Regression)
-model_name = "linear_model.pkl"
-model_path = os.path.join(models_dir, model_name)
+# Function to get the latest MLflow run_id if not provided
+def get_latest_run_id():
+    client = mlflow.tracking.MlflowClient()
+    runs = client.search_runs(experiment_ids=['0'], order_by=["start_time desc"])
+    
+    if runs:
+        latest_run_id = runs[0].info.run_id
+        print(f"Using latest MLflow run_id: {latest_run_id}")
+        return latest_run_id
+    else:
+        raise ValueError("No valid MLflow runs found. Please provide a valid run_id.")
 
-if not os.path.exists(model_path):
-    raise FileNotFoundError(f"❌ Model file '{model_name}' not found in {models_dir}")
+# Ask user for run_id
+run_id = input("🔹 Enter the MLflow run_id (press Enter to use the latest run): ").strip()
+if not run_id:
+    run_id = get_latest_run_id()
 
-model = joblib.load(model_path)
+# Load model from MLflow
+print(f"Loading model from MLflow run_id: {run_id}")
+model_uri = f"runs:/{run_id}/model"
+model = mlflow.pyfunc.load_model(model_uri)
 
 # Make predictions
 y_pred = model.predict(X_test)
@@ -42,7 +57,7 @@ results_df = pd.DataFrame({
 })
 
 # Show first 10 results
-print("\n📌 Predictions vs Actual Values:")
+print("\n Predictions vs Actual Values:")
 print(results_df.head(10))  # Display the first 10 rows
 
 # Save results as a CSV file
@@ -54,7 +69,7 @@ plt.scatter(y_test, y_pred, color="blue", alpha=0.6, label="Predictions")
 plt.plot([min(y_test), max(y_test)], [min(y_test), max(y_test)], linestyle="--", color="red", label="Perfect Prediction")
 plt.xlabel("Actual Donation Bags Collected")
 plt.ylabel("Predicted Donation Bags Collected")
-plt.title("Actual vs. Predicted Donations (Linear Regression)")
+plt.title("Actual vs. Predicted Donations (MLflow Model)")
 plt.legend()
 plt.savefig(os.path.join(results_dir, "scatter_plot_predictions.png"))
 plt.show()
@@ -75,4 +90,4 @@ plt.legend()
 plt.savefig(os.path.join(results_dir, "bar_chart_predictions.png"))
 plt.show()
 
-print("✅ Predictions completed and saved in the results folder!")
+print(" Predictions completed and saved in the results folder!")
