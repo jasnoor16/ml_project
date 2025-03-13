@@ -13,14 +13,21 @@ column_transformer = joblib.load(os.path.join(processed_dir, "column_transformer
 scaler = joblib.load(os.path.join(processed_dir, "scaler.pkl"))
 encoder = joblib.load(os.path.join(processed_dir, "time_spent_label_encoder.pkl"))
 
-# Define model path for Linear Regression (Model v1)
-model_v1_path = os.path.join("models", "Linear_Regression.pkl")
+# Define model paths
+model_v1_path = os.path.join("models", "Linear_Regression.pkl")  # v1: Linear Regression
+model_v2_path = os.path.join("models", "Random_Forest.pkl")  # v2: Random Forest
 
 # Load Model v1
 if os.path.exists(model_v1_path):
     model_v1 = joblib.load(model_v1_path)
 else:
     model_v1 = None
+
+# Load Model v2
+if os.path.exists(model_v2_path):
+    model_v2 = joblib.load(model_v2_path)
+else:
+    model_v2 = None
 
 @app.route('/')
 def home():
@@ -33,7 +40,7 @@ def project_info():
         "description": "This API predicts the number of donation bags collected based on input features.",
         "available_endpoints": {
             "/v1/predict": "Predict donation bags collected using Model Version 1 (Linear Regression)",
-            "/v2/predict": "Predict donation bags collected using Model Version 2",
+            "/v2/predict": "Predict donation bags collected using Model Version 2 (Random Forest)",
             "/health_status": "Check API health status",
             "/ml_project_home": "API documentation and usage"
         },
@@ -52,6 +59,17 @@ def predict_v1():
     if not model_v1:
         return jsonify({"error": "Model v1 (Linear Regression) is not available"}), 500
 
+    return process_prediction(model_v1)
+
+@app.route('/v2/predict', methods=['POST'])
+def predict_v2():
+    if not model_v2:
+        return jsonify({"error": "Model v2 (Random Forest) is not available"}), 500
+
+    return process_prediction(model_v2)
+
+# Function to process prediction (same logic for v1 and v2)
+def process_prediction(model):
     try:
         data = request.get_json()
         
@@ -93,7 +111,7 @@ def predict_v1():
         feature_scaled = scaler.transform(feature_encoded)
 
         # Make prediction
-        prediction = model_v1.predict(feature_scaled)
+        prediction = model.predict(feature_scaled)
 
         return jsonify({"predicted_donation_bags": int(prediction[0])})
     
