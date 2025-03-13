@@ -24,7 +24,7 @@ ml_project/
 │   ├── predict.py       # Script to make predictions
 │   ├── preprocess.py    # Data preprocessing logic
 │   ├── evaluate.py      # Model evaluation script
-│   └── utils/           # Shared helper functions
+│   └── ml_utils/           # Shared helper functions
 │       ├── model_utils.py
 │       └── helpers.py
 ├── configs/
@@ -63,16 +63,16 @@ dvc push
 
 ## **Usage Guide**
 ### **1. Data Preprocessing**
-python src/preprocess.py
+python3 src/preprocess.py
 
 ### **2. Model Training**
-python src/train.py
+python3 src/train.py
 
 ### **3. Model Evaluation**
-python src/evaluate.py
+python3 src/evaluate.py
 
 ### **4. Making Predictions**
-python src/predict.py
+python3 src/predict.py
 
 ## **MLflow Setup and Experiment Tracking**
 ### **1. Start MLflow UI**
@@ -133,4 +133,4 @@ Our DVC-tracked dataset is stored in **Google Drive** and can be accessed using 
 
 
 
-### **🚀 Project Completed Successfully!**
+### ** Project Completed Successfully!**
