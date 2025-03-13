@@ -5,7 +5,6 @@ import joblib
 import yaml
 import mlflow
 import mlflow.pyfunc
-import argparse
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -22,27 +21,47 @@ with open("./configs/predict_config.yaml", "r") as file:
 X_test = np.load(os.path.join(processed_dir, "X_test.npy"))  # Features
 y_test = np.load(os.path.join(processed_dir, "y_test.npy"))  # Actual values
 
+# Set MLflow Tracking URI
+mlflow.set_tracking_uri("http://127.0.0.1:8000")  # Ensure correct tracking server
+
 # Function to get the latest MLflow run_id if not provided
 def get_latest_run_id():
     client = mlflow.tracking.MlflowClient()
-    runs = client.search_runs(experiment_ids=['0'], order_by=["start_time desc"])
-    
+
+    # List all experiments
+    experiments = client.search_experiments()
+    print("Available Experiments:")
+    for exp in experiments:
+        print(f" - Experiment {exp.experiment_id}: {exp.name}")
+
+    # Search for runs in the correct experiment
+    runs = client.search_runs(experiment_ids=["757100552648002188"], order_by=["start_time desc"])
+
     if runs:
         latest_run_id = runs[0].info.run_id
         print(f"Using latest MLflow run_id: {latest_run_id}")
         return latest_run_id
     else:
-        raise ValueError("No valid MLflow runs found. Please provide a valid run_id.")
+        print("No valid MLflow runs found. Please manually enter a run_id.")
+        return None  # Return None instead of raising an error
 
 # Ask user for run_id
-run_id = input("🔹 Enter the MLflow run_id (press Enter to use the latest run): ").strip()
+run_id = input("Enter the MLflow run_id (press Enter to use the latest run): ").strip()
 if not run_id:
     run_id = get_latest_run_id()
 
+if not run_id:
+    print("No valid run_id provided. Exiting.")
+    exit(1)
+
 # Load model from MLflow
 print(f"Loading model from MLflow run_id: {run_id}")
-model_uri = f"runs:/{run_id}/model"
-model = mlflow.pyfunc.load_model(model_uri)
+model_uri = f"runs:/{run_id}/Linear_Regression"  # Ensure correct model name
+try:
+    model = mlflow.sklearn.load_model(model_uri)
+except Exception as e:
+    print(f"Error loading model: {e}")
+    exit(1)
 
 # Make predictions
 y_pred = model.predict(X_test)
@@ -57,7 +76,7 @@ results_df = pd.DataFrame({
 })
 
 # Show first 10 results
-print("\n Predictions vs Actual Values:")
+print("\nPredictions vs Actual Values:")
 print(results_df.head(10))  # Display the first 10 rows
 
 # Save results as a CSV file
@@ -90,4 +109,4 @@ plt.legend()
 plt.savefig(os.path.join(results_dir, "bar_chart_predictions.png"))
 plt.show()
 
-print(" Predictions completed and saved in the results folder!")
+print("Predictions completed and saved in the results folder.")

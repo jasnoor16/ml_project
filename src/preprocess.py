@@ -53,6 +53,10 @@ df_2024.rename(columns=rename_2024, inplace=True)
 # Removing the unnecessary columns we listed above
 df_2023.drop(columns=DROP_COLUMNS_2023, errors='ignore', inplace=True)
 df_2024.drop(columns=DROP_COLUMNS_2024, errors='ignore', inplace=True)
+# Drop "Comments" before encoding and model training
+df_2023.drop(columns=["Comments"], errors="ignore", inplace=True)
+df_2024.drop(columns=["Comments"], errors="ignore", inplace=True)
+
 
 # Making sure that both datasets have the same columns (keeping only common columns)
 common_columns = df_2023.columns.intersection(df_2024.columns)

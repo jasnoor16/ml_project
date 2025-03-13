@@ -1,5 +1,6 @@
 import sys
 import os
+import joblib  
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import numpy as np
@@ -8,7 +9,7 @@ import mlflow.sklearn
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.tree import DecisionTreeRegressor
-from ml_utils.model_utils import save_model, evaluate_model 
+from ml_utils.model_utils import save_model, evaluate_model
 
 class Trainer:
     def __init__(self):
@@ -56,7 +57,10 @@ class Trainer:
                 mlflow.log_params(params)
 
             model.fit(self.X_train, self.y_train)
-            save_model(model, model_name)
+
+            # **Explicitly save the model using joblib**
+            model_path = os.path.join(self.models_dir, f"{model_name}.pkl")
+            joblib.dump(model, model_path)  # Save using joblib for compatibility
 
             mlflow.sklearn.log_model(model, model_name)
 
