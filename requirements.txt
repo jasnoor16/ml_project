@@ -8,3 +8,5 @@ dvc-gdrive
 mlflow
 matplotlib
 seaborn
+requests
+flask
