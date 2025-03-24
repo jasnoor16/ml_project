@@ -1,21 +1,14 @@
 from flask import Flask, jsonify, request
 import joblib
 import os
-import numpy as np
 import pandas as pd
 
 # Create Flask app
 app = Flask(__name__)
 
-# Load Preprocessing Artifacts
-processed_dir = "./data/processed/"
-column_transformer = joblib.load(os.path.join(processed_dir, "column_transformer.pkl"))
-scaler = joblib.load(os.path.join(processed_dir, "scaler.pkl"))
-encoder = joblib.load(os.path.join(processed_dir, "time_spent_label_encoder.pkl"))
-
 # Define model paths
-model_v1_path = os.path.join("models", "Linear_Regression.pkl")  # v1: Linear Regression
-model_v2_path = os.path.join("models", "Random_Forest.pkl")  # v2: Random Forest
+model_v1_path = os.path.join("models", "Linear_Regression_pipeline.pkl")  # v1: Linear Regression Pipeline
+model_v2_path = os.path.join("models", "Random_Forest_pipeline.pkl")  # v2: Random Forest Pipeline
 
 # Load Model v1
 if os.path.exists(model_v1_path):
@@ -29,6 +22,39 @@ if os.path.exists(model_v2_path):
 else:
     model_v2 = None
 
+# Function to process prediction 
+def process_prediction(model):
+    try:
+        data = request.get_json()
+
+        # Validate input
+        if "features" not in data:
+            return jsonify({"error": "Missing 'features' key in request JSON"}), 400
+
+        features = data["features"]
+
+        # Expected feature format
+        expected_columns = [
+            "Stake", "Ward/Branch", "# of Adult Volunteers", "# of Youth Volunteers", 
+            "Distance", "Time Spent", "Completed More Than One Route", "Routes Completed",
+            "Doors in Route"
+        ]
+        
+        if len(features) != len(expected_columns):
+            return jsonify({"error": f"Expected {len(expected_columns)} features, but got {len(features)}"}), 400
+        
+        # Convert input into DataFrame
+        feature_df = pd.DataFrame([features], columns=expected_columns)
+
+        # Since the model pipeline includes preprocessing, we can directly make predictions
+        prediction = model.predict(feature_df)
+
+        return jsonify({"predicted_donation_bags": int(prediction[0])})
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# Routes defined AFTER the process_prediction function
 @app.route('/')
 def home():
     return "<h1>Welcome to the ML Model Prediction API</h1>"
@@ -46,7 +72,6 @@ def project_info():
         },
         "example_request_payload": {
             "features": ["Stake", "Ward/Branch", 3, 2, 1, 30, "No", "2", 50]  
-            # No "Comments" column anymore
         }
     })
 
@@ -67,56 +92,6 @@ def predict_v2():
         return jsonify({"error": "Model v2 (Random Forest) is not available"}), 500
 
     return process_prediction(model_v2)
-
-# Function to process prediction (same logic for v1 and v2)
-def process_prediction(model):
-    try:
-        data = request.get_json()
-        
-        # Validate input
-        if "features" not in data:
-            return jsonify({"error": "Missing 'features' key in request JSON"}), 400
-        
-        features = data["features"]
-        
-        # Expected feature format (excluding "Comments")
-        expected_columns = [
-            "Stake", "Ward/Branch", "# of Adult Volunteers", "# of Youth Volunteers", 
-            "Distance", "Time Spent", "Completed More Than One Route", "Routes Completed",
-            "Doors in Route"
-        ]
-        
-        if len(features) != len(expected_columns):
-            return jsonify({"error": f"Expected {len(expected_columns)} features, but got {len(features)}"}), 400
-        
-        # Convert input into DataFrame
-        feature_df = pd.DataFrame([features], columns=expected_columns)
-
-        # Drop "Comments" column if the model is still expecting it
-        if "Comments" in column_transformer.feature_names_in_:
-            feature_df["Comments"] = "No Comments"  # Assign a default value
-            feature_df.drop(columns=["Comments"], inplace=True)
-
-        # Convert categorical "Yes/No" values
-        feature_df["Completed More Than One Route"] = feature_df["Completed More Than One Route"].map({"Yes": 1, "No": 0}).fillna(0)
-
-        # Convert Routes Completed values
-        route_mapping = {"1": 1, "2": 2, "3": 3, "More than 3": 4}
-        feature_df["Routes Completed"] = feature_df["Routes Completed"].map(route_mapping).fillna(1)
-
-        # Apply column transformer
-        feature_encoded = column_transformer.transform(feature_df)
-
-        # Scale numerical variables
-        feature_scaled = scaler.transform(feature_encoded)
-
-        # Make prediction
-        prediction = model.predict(feature_scaled)
-
-        return jsonify({"predicted_donation_bags": int(prediction[0])})
-    
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
 
 # Run Flask app
 if __name__ == '__main__':

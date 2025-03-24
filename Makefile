@@ -10,19 +10,19 @@ setup:
 
 # Run preprocessing
 preprocess:
-	$(VENV_DIR)/bin/python src/preprocess.py
+	$(VENV_DIR)/bin/python3 src/preprocess.py
 
 # Train the model
 train:
-	$(VENV_DIR)/bin/python src/train.py
+	$(VENV_DIR)/bin/python3 src/train.py
 
 # Evaluate the model
 evaluate:
-	$(VENV_DIR)/bin/python src/evaluate.py
+	$(VENV_DIR)/bin/python3 src/evaluate.py
 
 # Run predictions
 predict:
-	$(VENV_DIR)/bin/python src/predict.py
+	$(VENV_DIR)/bin/python3 src/predict.py
 
 # Run everything
 all: setup preprocess train evaluate predict

@@ -9,7 +9,7 @@ import mlflow.sklearn
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.tree import DecisionTreeRegressor
-from ml_utils.model_utils import save_model, evaluate_model
+from ml_utils.model_utils import evaluate_model
 
 class Trainer:
     def __init__(self):
@@ -58,9 +58,10 @@ class Trainer:
 
             model.fit(self.X_train, self.y_train)
 
-            # **Explicitly save the model using joblib**
-            model_path = os.path.join(self.models_dir, f"{model_name}.pkl")
-            joblib.dump(model, model_path)  # Save using joblib for compatibility
+            # **Save only 3 models (Linear Regression, Random Forest, Decision Tree)**
+            if model_name in ["Linear_Regression", "Random_Forest", "Decision_Tree"]:
+                model_path = os.path.join(self.models_dir, f"{model_name}.pkl")
+                joblib.dump(model, model_path)  # Save using joblib for compatibility
 
             mlflow.sklearn.log_model(model, model_name)
 
@@ -76,14 +77,9 @@ class Trainer:
         """Train all models"""
         print("\n Starting Model Training...\n")
 
-        linear_model = LinearRegression()
-        self.train_model("Linear_Regression", linear_model)
-
-        rf_model = RandomForestRegressor(**self.random_forest_params)
-        self.train_model("Random_Forest", rf_model, self.random_forest_params)
-
-        dt_model = DecisionTreeRegressor(**self.decision_tree_params)
-        self.train_model("Decision_Tree", dt_model, self.decision_tree_params)
+        self.train_model("Linear_Regression", LinearRegression())
+        self.train_model("Random_Forest", RandomForestRegressor(**self.random_forest_params))
+        self.train_model("Decision_Tree", DecisionTreeRegressor(**self.decision_tree_params))
 
         print("\n All models trained successfully.\n")
 
