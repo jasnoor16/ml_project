@@ -1,136 +1,155 @@
-# **Alberta Food Drive ML Project**
+Alberta Food Drive ML Project
 
-## **Project Overview**
-This project focuses on **predicting donation bag collection for the Alberta Food Drive** using machine learning techniques. The goal is to analyze various factors such as volunteer efforts, locations, and past trends to create an optimized prediction model. The project follows **best practices for reproducibility, modularity, and maintainability**, ensuring it can be deployed in a real-world setting.
+This machine learning project predicts how many donation bags will be collected during Alberta’s Food Drive campaigns. It uses real-world data such as number of volunteers, distance, time, and location. The model helps organizers plan better donation drives.
 
-### **Team Members**
-- **Jasnoor Kaur Khangura**
-- **Deeksha LNU**
-- **Ravneet Singh Plaha**
-- **Rahul Singla**
+The project follows MLOps best practices: it is modular, reproducible, and ready for deployment. It uses MLflow for tracking experiments, DVC for data versioning, and Docker for containerization.
 
-## **Project Structure**
-The project follows **MLOps principles**, ensuring that the code is **modular, reusable, and scalable**. Below is the directory structure:
+Team Members:
+- Jasnoor Kaur Khangura
+- Deeksha LNU
+- Ravneet Singh Plaha
+- Rahul Singla
+
+Project Folder Structure:
 
 ml_project/
-├── data/                # Stores datasets (raw, processed, external)
+├── data/                 # Raw and processed datasets
 │   ├── raw/
 │   ├── processed/
 │   └── external/
-├── models/              # Saved trained model files (e.g., .pkl, .joblib)
-├── notebooks/           # Jupyter notebooks for exploration/demos
+├── models/               # Saved trained model files
+├── notebooks/            # EDA and prototyping notebooks
 ├── src/
-│   ├── train.py         # Script to train the model
-│   ├── predict.py       # Script to make predictions
-│   ├── preprocess.py    # Data preprocessing logic
-│   ├── evaluate.py      # Model evaluation script
-│   └── ml_utils/           # Shared helper functions
+│   ├── train.py
+│   ├── predict_api.py
+│   ├── preprocess.py
+│   ├── evaluate.py
+│   └── ml_utils/
 │       ├── model_utils.py
 │       └── helpers.py
 ├── configs/
 │   ├── train_config.yaml
 │   └── predict_config.yaml
-├── docs/                # Documentation folder
-│   ├── README.md        # Project documentation
-│   ├── user_guide.md    # Step-by-step guide for using this project
-├── .dvcignore           # Files to ignore for DVC
-├── requirements.txt     # Dependencies required to run the project
-├── Makefile             # Automates setup and training
-└── .gitignore           # Exclude unnecessary files
+├── requirements.txt
+├── requirements-dev.txt
+├── Makefile
+├── Dockerfile.mlapp
+├── Dockerfile.mlflow
+├── docker-compose.yml
+└── .gitignore, .dvcignore
 
-## **Installation Guide**
-Follow these steps to set up and run the project:
+How to Run This Project Locally:
 
-### **1. Create a Virtual Environment**
-python3 -m .venv venv
-source venv/bin/activate  # On macOS/Linux
-venv\Scripts\activate     # On Windows
+Step 1: Create a Virtual Environment
 
-### **2. Install Dependencies**
+python -m venv .venv
+source .venv/bin/activate         # For Mac/Linux
+.venv\Scripts\activate            # For Windows
+
+Step 2: Install Dependencies
+
 pip install -r requirements.txt
+pip install -r requirements-dev.txt  
 
-### **3. Initialize DVC and Track Data**
+DVC Setup:
+
+Step 1: Initialize and Track Data
+
 dvc init
 dvc add data/raw
 dvc add data/processed
 git add .
 git commit -m "Initialized DVC and tracked data"
-git push origin main
 
-### **4. Configure DVC Remote Storage (Google Drive)**
-dvc remote add -d gdrive_remote gdrive://1gNqMDp2dxr521HgqHt2B0iALIdOhTEIh
+Step 2: Setup Google Drive as Remote and Push
+
+dvc remote add -d gdrive_remote gdrive://your_drive_id_here
 dvc push
 
-## **Usage Guide**
-### **1. Data Preprocessing**
-python3 src/preprocess.py
+Training and Evaluation:
 
-### **2. Model Training**
-python3 src/train.py
+Step 1: Preprocess the Data
 
-### **3. Model Evaluation**
-python3 src/evaluate.py
+python src/preprocess.py
 
-### **4. Making Predictions**
-python3 src/predict.py
+Step 2: Train the Models
 
-## **MLflow Setup and Experiment Tracking**
-### **1. Start MLflow UI**
+python src/train.py
+
+Step 3: Evaluate the Models
+
+python src/evaluate.py
+
+Step 4: (Optional) Run Makefile Commands
+
+make all           # Run everything
+make preprocess    # Only preprocessing
+make train         # Only training
+make evaluate      # Only evaluation
+make predict       # Make predictions from CLI
+
+MLflow Setup for Tracking:
+
+Step 1: Start the MLflow UI
+
 mlflow ui --port 8000
 
-### **2. Retrieve Run ID**
+Step 2: Run Training Script (auto logs to MLflow)
+
+python src/train.py
+
+Step 3: Get Run ID and Serve Model 
+
 mlflow models serve -m "runs:/<RUN_ID>/model"
-Replace `<RUN_ID>` with the actual **run ID** from the MLflow UI.
 
-## **Configuration Files**
-### **1. Training Configuration (`configs/train_config.yaml`)**
-random_forest:
-  n_estimators: 100
-  max_depth: Null
-  random_state: 42
+Configuration Files:
 
-decision_tree:
-  max_depth: Null
-  random_state: 42
+configs/train_config.yaml
+Contains model hyperparameters for training.
 
-### **2. Prediction Configuration (`configs/predict_config.yaml`)**
-default_model: "linear"
-output_directory: "./data/processed/"
+configs/predict_config.yaml
+Contains default model and output directory setup.
 
-## **Makefile Automation**
-### **Run Everything (Preprocessing, Training, Evaluation)**
-make all
+Model Performance:
 
-### **Run Individual Steps**
-make preprocess  # Runs preprocessing
-make train       # Trains the models
-make evaluate    # Evaluates models
-make predict     # Runs predictions
-
-## **Model Performance**
 | Model              | MAE   | RMSE  | R² Score |
-|--------------------|------|------|---------|
-| **Linear Regression** | **14.51** | **32.65** | **0.0696** |
-| **Random Forest** | 15.11 | 32.96 | 0.0515 |
-| **Decision Tree** | 21.95 | 38.14 | -0.2694 |
+|--------------------|-------|-------|----------|
+| Linear Regression  | 14.51 | 32.65 | 0.0696   |
+| Random Forest      | 15.11 | 32.96 | 0.0515   |
+| Decision Tree      | 21.95 | 38.14 | -0.2694  |
 
-## **Final Model Selection**
-Since **Linear Regression** had the lowest RMSE and the highest R² Score, it was selected as the final model.
+Final Model:
+Linear Regression was chosen as the final model based on best performance.
 
-models/linear_model.pkl
+Docker Usage:
 
-## **Git Version Control**
-### **1. Push Code Changes to GitHub**
+This project uses Docker to run the MLflow server and Flask API in isolated containers.
+
+To build and run the services:
+
+docker-compose up --build
+
+The Flask API will run on:
+http://127.0.0.1:9999
+
+The MLflow UI will run on:
+http://127.0.0.1:8000
+
+Docker Image Links :
+
+ML App Docker Image: <paste-link-here>
+MLflow Docker Image: <paste-link-here>
+
+Git and DVC Version Control:
+
+To push code changes:
 git add .
-git commit -m "Updated training and evaluation scripts"
+git commit -m "Your message"
 git push origin main
 
-### **2. Push Data Changes to DVC**
+To push data changes:
 dvc push
 
-## **DVC Remote Storage Link**
-Our DVC-tracked dataset is stored in **Google Drive** and can be accessed using the configured remote storage.
+Google Drive stores the latest version of raw and processed data.
 
-
-
-### ** Project Completed Successfully!**
+Project completed with full MLOps integration: preprocessing, training, evaluation, logging, versioning, and deployment — all automated and containerized.

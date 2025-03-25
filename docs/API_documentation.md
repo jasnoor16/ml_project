@@ -1,189 +1,116 @@
 # ML Model Prediction API Documentation
 
-This API predicts the number of donation bags collected based on input features. It is built using Flask and serves machine learning models.
+This API predicts how many donation bags will be collected based on inputs like volunteers, distance, time, and routes. It is built using Flask and uses trained machine learning models.
 
----
+## 1. How to Set Up and Run the API
 
-## 1. Setting Up and Running the API
-
-### Prerequisites
-Ensure you have the following installed:
+### Requirements
 
 - Python 3
-- Flask, NumPy, Pandas, Joblib, Scikit-learn
-- MLflow for model tracking
+- Flask, scikit-learn, joblib, pandas, numpy
+- MLflow installed and running
 
----
+### Step-by-Step Setup
 
-### Step 1: Clone the Repository
+Step 1: Clone the Repository
 
-```bash
 git clone https://github.com/jasnoor16/ml_project.git
 cd ml_project
-```
 
-### Step 2: Set Up Virtual Environment
+Step 2: Create Virtual Environment
 
-```bash
 python -m venv .venv
-source .venv/bin/activate  # On Windows, use: .venv\Scripts\activate
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-```
 
-### Step 3: Start the API
+Step 3: Run the Flask API
 
-```bash
 python src/predict_api.py
-```
 
-Once running, access the API at:
+Access the API locally at:
 http://127.0.0.1:9999
 
----
+## 2. API Endpoints
 
-## 2. Available Endpoints
-
-### Home
-
-- **URL:** `/`
-- **Method:** `GET`
-
-```bash
+/  
+Method: GET  
+Description: Basic welcome message  
 curl -X GET http://127.0.0.1:9999/
-```
 
----
-
-### API Info
-
-- **URL:** `/ml_project_home`
-- **Method:** `GET`
-
-```bash
+/ml_project_home  
+Method: GET  
+Description: API usage info and available endpoints  
 curl -X GET http://127.0.0.1:9999/ml_project_home
-```
 
----
-
-### Health Check
-
-- **URL:** `/health_status`
-- **Method:** `GET`
-
-```bash
+/health_status  
+Method: GET  
+Description: Health check for the API  
 curl -X GET http://127.0.0.1:9999/health_status
-```
 
----
+## 3. Make a Prediction
 
-## 3. Making Predictions
+You can predict donation bags using two versions of the model.
 
-### Predict Donation Bags (Version 1)
+Version 1: Linear Regression  
+URL: /v1/predict  
+Method: POST  
 
-- **URL:** `/v1/predict`
-- **Method:** `POST`
-
-```bash
 curl -X POST http://127.0.0.1:9999/v1/predict \
   -H "Content-Type: application/json" \
-  -d '{
-        "features": ["Riverbend Stake", "Clareview Ward", 3, 2, 1, 30, "No", "2", 50]
-      }'
-```
+  -d '{"features": ["Riverbend Stake", "Clareview Ward", 3, 2, 1, 30, "No", "2", 50]}'
 
-**Example Response:**
-```json
-{
-  "predicted_donation_bags": 42
-}
-```
+Sample Response:  
+{"predicted_donation_bags": 42}
 
----
+Version 2: Random Forest  
+URL: /v2/predict  
+Method: POST  
 
-### Predict Donation Bags (Version 2)
-
-- **URL:** `/v2/predict`
-- **Method:** `POST`
-
-```bash
 curl -X POST http://127.0.0.1:9999/v2/predict \
   -H "Content-Type: application/json" \
-  -d '{
-        "features": ["Riverbend Stake", "Clareview Ward", 3, 2, 1, 30, "No", "2", 50]
-      }'
-```
+  -d '{"features": ["Riverbend Stake", "Clareview Ward", 3, 2, 1, 30, "No", "2", 50]}'
 
-**Example Response:**
-```json
-{
-  "predicted_donation_bags": 39
-}
-```
+Sample Response:  
+{"predicted_donation_bags": 39}
 
----
+## 4. Input Format
 
-## 4. Valid Input Format
+The "features" list must contain exactly 9 items in this order:
 
-### Stake and Ward Names
+1. Stake (e.g., "Riverbend Stake")
+2. Ward/Branch (e.g., "Clareview Ward")
+3. # of Adult Volunteers (e.g., 1, 2, 3)
+4. # of Youth Volunteers (e.g., 1, 2, 3)
+5. Distance (numeric)
+6. Time Spent (in minutes, numeric)
+7. Completed More Than One Route ("Yes" or "No")
+8. Routes Completed ("1", "2", "3", "More than 3")
+9. Doors in Route (numeric)
 
-- **Stake:**  
-  "Riverbend Stake", "Bonnie Doon Stake", "Gateway Stake", "YSA Stake", "Edmonton North Stake"
+The backend will handle preprocessing such as:
+- Time category conversion
+- Label encoding
+- One-hot encoding
+- Scaling
 
-- **Ward/Branch:**  
-  "Clareview Ward", "Woodbend Ward", "Londonderry Ward", etc.
+## 5. Error Handling
 
-### Other Fields
+Missing Features  
 
-| Feature                          | Example Values                    |
-|----------------------------------|-----------------------------------|
-| # of Adult Volunteers            | 1, 2, 3, ...                       |
-| # of Youth Volunteers            | 1, 2, 3, ...                       |
-| Distance                         | 1, 2, 3, ...                       |
-| Time Spent                       | 15, 30, 45, ...                    |
-| Completed More Than One Route    | "Yes", "No"                        |
-| Routes Completed                 | "1", "2", "3", "More than 3"       |
-| Doors in Route                   | 10, 20, 30, ...                    |
-
----
-
-## 5. Handling Errors
-
-### Missing Features
-
-```bash
 curl -X POST http://127.0.0.1:9999/v1/predict \
   -H "Content-Type: application/json" \
-  -d '{
-        "features": ["Riverbend Stake", "Clareview Ward", 3, 2, 1, 30]
-      }'
-```
+  -d '{"features": ["Riverbend Stake", "Clareview Ward", 3, 2, 1, 30]}'
 
-**Response:**
-```json
-{
-  "error": "Expected 9 features, but got 6"
-}
-```
+Expected Response:  
+{"error": "Expected 9 features, but got 6"}
 
----
+Invalid Data Type  
 
-### Invalid Data Type
-
-```bash
 curl -X POST http://127.0.0.1:9999/v1/predict \
   -H "Content-Type: application/json" \
-  -d '{
-        "features": ["Riverbend Stake", "Clareview Ward", "three", 2, 1, 30, "No", "2", 50]
-      }'
-```
+  -d '{"features": ["Riverbend Stake", "Clareview Ward", "three", 2, 1, 30, "No", "2", 50]}'
 
-**Response:**
-```json
-{
-  "error": "could not convert string to float: 'three'"
-}
-```
+Expected Response:  
+{"error": "could not convert string to float: 'three'"}
 
----
-
-*End of documentation.*
+End of documentation.
