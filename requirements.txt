@@ -2,11 +2,5 @@ numpy
 pandas
 scikit-learn
 joblib
-pyyaml
-dvc
-dvc-gdrive
 mlflow
-matplotlib
-seaborn
-requests
 flask

@@ -7,7 +7,7 @@ setup:
 	$(PYTHON) -m venv $(VENV_DIR)
 	$(VENV_DIR)/bin/pip install --upgrade pip
 	$(VENV_DIR)/bin/pip install -r requirements.txt
-
+	$(VENV_DIR)/bin/pip install -r requirements-dev.txt
 # Run preprocessing
 preprocess:
 	$(VENV_DIR)/bin/python3 src/preprocess.py

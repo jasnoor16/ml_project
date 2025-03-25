@@ -1,0 +1,6 @@
+pyyaml
+dvc
+dvc-gdrive
+matplotlib
+seaborn
+requests

@@ -1,6 +1,6 @@
 import sys
 import os
-import joblib  
+import joblib
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import numpy as np
@@ -9,7 +9,27 @@ import mlflow.sklearn
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.tree import DecisionTreeRegressor
+from sklearn.pipeline import Pipeline
+from sklearn.impute import SimpleImputer
 from ml_utils.model_utils import evaluate_model
+import logging
+
+# Set log directory
+log_dir = os.environ.get("LOG_DIR", "logs")
+os.makedirs(log_dir, exist_ok=True)
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(),
+        logging.FileHandler(os.path.join(log_dir, 'train.log' if __name__ == '__main__' and 'train' in __file__ else 'api.log'))
+    ]
+)
+
+logger = logging.getLogger(__name__)
+
 
 class Trainer:
     def __init__(self):
@@ -24,18 +44,20 @@ class Trainer:
             self.y_train = np.load(os.path.join(self.processed_dir, "y_train.npy"))
             self.X_test = np.load(os.path.join(self.processed_dir, "X_test.npy"))
             self.y_test = np.load(os.path.join(self.processed_dir, "y_test.npy"))
-            print(" Data loaded successfully.")
+            logger.info("Data loaded successfully.")
+            print("Data loaded successfully.")
         except Exception as e:
-            print(f" Error loading data: {e}")
+            logger.error(f"Error loading data: {e}")
+            print(f"Error loading data: {e}")
             exit(1)
 
         # MLflow Tracking Setup
-        self.mlflow_tracking_uri = "http://127.0.0.1:8000"
+        self.mlflow_tracking_uri = "http://mlflow:8000"
         self.experiment_name = "ML_Project_Training"
         mlflow.set_tracking_uri(self.mlflow_tracking_uri)
         mlflow.set_experiment(self.experiment_name)
 
-        # **Enable MLflow Auto-Logging**
+        # Enable MLflow Auto-Logging
         mlflow.autolog()
 
         # Model Parameters
@@ -51,37 +73,48 @@ class Trainer:
 
     def train_model(self, model_name, model, params=None):
         """Train a model and log it to MLflow"""
-        print(f" Training {model_name}...")
+        logger.info(f"Training {model_name}...")
+        print(f"Training {model_name}...")
+        
         with mlflow.start_run(run_name=model_name):
             if params:
                 mlflow.log_params(params)
 
-            model.fit(self.X_train, self.y_train)
+            # Create pipeline with imputer
+            pipeline = Pipeline([
+                ('imputer', SimpleImputer(strategy='median')),
+                ('model', model)
+            ])
 
-            # **Save only 3 models (Linear Regression, Random Forest, Decision Tree)**
+            pipeline.fit(self.X_train, self.y_train)
+
+            # Save the model pipeline
             if model_name in ["Linear_Regression", "Random_Forest", "Decision_Tree"]:
                 model_path = os.path.join(self.models_dir, f"{model_name}.pkl")
-                joblib.dump(model, model_path)  # Save using joblib for compatibility
+                joblib.dump(pipeline, model_path)
 
-            mlflow.sklearn.log_model(model, model_name)
+            mlflow.sklearn.log_model(pipeline, model_name)
 
-            mae, rmse, r2 = evaluate_model(model, self.X_test, self.y_test)
+            mae, rmse, r2 = evaluate_model(pipeline, self.X_test, self.y_test)
 
             mlflow.log_metric("MAE", mae)
             mlflow.log_metric("RMSE", rmse)
             mlflow.log_metric("R2_Score", r2)
 
-        print(f" {model_name} training completed.\n")
+        logger.info(f"{model_name} training completed.")
+        print(f"{model_name} training completed.")
 
     def train_models(self):
         """Train all models"""
-        print("\n Starting Model Training...\n")
+        logger.info("Starting Model Training...")
+        print("Starting Model Training...")
 
         self.train_model("Linear_Regression", LinearRegression())
         self.train_model("Random_Forest", RandomForestRegressor(**self.random_forest_params))
         self.train_model("Decision_Tree", DecisionTreeRegressor(**self.decision_tree_params))
 
-        print("\n All models trained successfully.\n")
+        logger.info("All models trained and saved.")
+        print("All models trained and saved.")
 
     def run_training(self):
         """Run training pipeline"""
@@ -90,4 +123,5 @@ class Trainer:
 if __name__ == "__main__":
     trainer = Trainer()
     trainer.run_training()
-    print("\n Training & Evaluation Completed. Check MLflow UI.")
+    logger.info("Training completed.")
+    print("Training completed.")
