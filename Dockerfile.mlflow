@@ -1,0 +1,30 @@
+FROM python:3.9
+
+WORKDIR /mlflow
+
+# Install system packages required for MLflow
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    default-libmysqlclient-dev \
+    libssl-dev \
+    curl \
+    git \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+# Upgrade pip and tools
+RUN pip install --upgrade pip setuptools wheel
+
+# Install MLflow with PyMySQL
+RUN pip install mlflow pymysql
+
+# Create mlruns directory 
+RUN mkdir -p /mlflow/mlruns
+
+# Copy optional database if needed
+COPY mlflow.db mlflow.db
+
+# Expose MLflow port
+EXPOSE 8000
+
+CMD ["mlflow", "ui", "--host", "0.0.0.0", "--port", "8000"]

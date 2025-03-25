@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  ml-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.mlapp
+    ports:
+      - "9999:9999"
+    volumes:
+      - ./logs:/app/logs
+      - ./data/processed:/app/data/processed
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow:8000
+    depends_on:
+      - mlflow
+    networks:
+      - ml-network
+
+  mlflow:
+    build:
+      context: .
+      dockerfile: Dockerfile.mlflow
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./mlruns:/mlflow/mlruns
+    networks:
+      - ml-network
+
+networks:
+  ml-network:
+    driver: bridge
