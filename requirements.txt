@@ -1,6 +1,13 @@
-numpy
 pandas
+numpy
 scikit-learn
-joblib
-mlflow
+xgboost
 flask
+mlflow
+dvc
+python-dotenv
+joblib
+gunicorn
+requests
+matplotlib
+seaborn

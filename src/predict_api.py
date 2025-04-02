@@ -148,4 +148,4 @@ def predict_v2():
 
 if __name__ == '__main__':
     logger.info("Starting ML Prediction API on port 9999...")
-    app.run(host='0.0.0.1', port=9999, debug=True)
+    app.run(host='0.0.0.0', port=9999, debug=True)

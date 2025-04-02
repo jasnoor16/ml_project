@@ -1,0 +1,18 @@
+2025-04-02 03:24:52,537 - ml_app.api - INFO - Model v1 (Linear Regression) loaded successfully.
+2025-04-02 03:24:52,602 - ml_app.api - INFO - Model v2 (Random Forest) loaded successfully.
+2025-04-02 03:24:52,605 - ml_app.api - INFO - Starting ML Prediction API on port 9999...
+2025-04-02 03:31:10,046 - ml_app.api - INFO - Model v1 (Linear Regression) loaded successfully.
+2025-04-02 03:31:10,096 - ml_app.api - INFO - Model v2 (Random Forest) loaded successfully.
+2025-04-02 03:31:10,098 - ml_app.api - INFO - Starting ML Prediction API on port 9999...
+2025-04-02 03:31:10,121 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:9999
+ * Running on http://172.18.0.3:9999
+2025-04-02 03:31:10,121 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-04-02 03:31:10,122 - werkzeug - INFO -  * Restarting with stat
+2025-04-02 03:31:11,273 - ml_app.api - INFO - Model v1 (Linear Regression) loaded successfully.
+2025-04-02 03:31:11,376 - ml_app.api - INFO - Model v2 (Random Forest) loaded successfully.
+2025-04-02 03:31:11,378 - ml_app.api - INFO - Starting ML Prediction API on port 9999...
+2025-04-02 03:31:11,387 - werkzeug - WARNING -  * Debugger is active!
+2025-04-02 03:31:11,397 - werkzeug - INFO -  * Debugger PIN: 171-227-982
+2025-04-02 03:31:55,403 - werkzeug - INFO - 172.18.0.1 - - [02/Apr/2025 03:31:55] "GET /health_status HTTP/1.1" 200 -

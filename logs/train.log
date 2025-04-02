@@ -1,0 +1,18 @@
+2025-04-01 20:27:49,673 - __main__ - INFO - Data loaded successfully.
+2025-04-01 20:27:59,747 - urllib3.connectionpool - WARNING - Retrying (Retry(total=6, connect=6, read=7, redirect=7, status=7)) after connection broken by 'NameResolutionError("<urllib3.connection.HTTPConnection object at 0x7eff9a1ed3a0>: Failed to resolve 'mlflow' ([Errno -3] Temporary failure in name resolution)")': /api/2.0/mlflow/experiments/get-by-name?experiment_name=ML_Project_Training
+2025-04-01 20:28:14,219 - urllib3.connectionpool - WARNING - Retrying (Retry(total=5, connect=5, read=7, redirect=7, status=7)) after connection broken by 'NameResolutionError("<urllib3.connection.HTTPConnection object at 0x7eff9d4450d0>: Failed to resolve 'mlflow' ([Errno -3] Temporary failure in name resolution)")': /api/2.0/mlflow/experiments/get-by-name?experiment_name=ML_Project_Training
+2025-04-01 20:28:32,671 - urllib3.connectionpool - WARNING - Retrying (Retry(total=4, connect=4, read=7, redirect=7, status=7)) after connection broken by 'NameResolutionError("<urllib3.connection.HTTPConnection object at 0x7eff99c4eea0>: Failed to resolve 'mlflow' ([Errno -3] Temporary failure in name resolution)")': /api/2.0/mlflow/experiments/get-by-name?experiment_name=ML_Project_Training
+2025-04-01 20:28:58,983 - urllib3.connectionpool - WARNING - Retrying (Retry(total=3, connect=3, read=7, redirect=7, status=7)) after connection broken by 'NameResolutionError("<urllib3.connection.HTTPConnection object at 0x7eff99375670>: Failed to resolve 'mlflow' ([Errno -3] Temporary failure in name resolution)")': /api/2.0/mlflow/experiments/get-by-name?experiment_name=ML_Project_Training
+2025-04-01 20:29:41,621 - urllib3.connectionpool - WARNING - Retrying (Retry(total=2, connect=2, read=7, redirect=7, status=7)) after connection broken by 'NameResolutionError("<urllib3.connection.HTTPConnection object at 0x7eff993756d0>: Failed to resolve 'mlflow' ([Errno -3] Temporary failure in name resolution)")': /api/2.0/mlflow/experiments/get-by-name?experiment_name=ML_Project_Training
+2025-04-01 20:30:56,631 - urllib3.connectionpool - WARNING - Retrying (Retry(total=1, connect=1, read=7, redirect=7, status=7)) after connection broken by 'NameResolutionError("<urllib3.connection.HTTPConnection object at 0x7eff99374ef0>: Failed to resolve 'mlflow' ([Errno -3] Temporary failure in name resolution)")': /api/2.0/mlflow/experiments/get-by-name?experiment_name=ML_Project_Training
+2025-04-01 20:33:06,736 - urllib3.connectionpool - WARNING - Retrying (Retry(total=0, connect=0, read=7, redirect=7, status=7)) after connection broken by 'NameResolutionError("<urllib3.connection.HTTPConnection object at 0x7eff99376c60>: Failed to resolve 'mlflow' ([Errno -3] Temporary failure in name resolution)")': /api/2.0/mlflow/experiments/get-by-name?experiment_name=ML_Project_Training
+2025-04-02 03:33:23,778 - __main__ - INFO - Data loaded successfully.
+2025-04-02 03:33:23,967 - __main__ - INFO - Starting Model Training...
+2025-04-02 03:33:23,968 - __main__ - INFO - Training Linear_Regression...
+2025-04-02 03:33:30,011 - __main__ - INFO - Linear_Regression training completed.
+2025-04-02 03:33:30,011 - __main__ - INFO - Training Random_Forest...
+2025-04-02 03:33:35,292 - __main__ - INFO - Random_Forest training completed.
+2025-04-02 03:33:35,292 - __main__ - INFO - Training Decision_Tree...
+2025-04-02 03:33:40,393 - __main__ - INFO - Decision_Tree training completed.
+2025-04-02 03:33:40,394 - __main__ - INFO - All models trained and saved.
+2025-04-02 03:33:40,394 - __main__ - INFO - Training completed.

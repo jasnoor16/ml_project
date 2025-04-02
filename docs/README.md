@@ -31,7 +31,6 @@ ml_project/
 │   ├── train_config.yaml
 │   └── predict_config.yaml
 ├── requirements.txt
-├── requirements-dev.txt
 ├── Makefile
 ├── Dockerfile.mlapp
 ├── Dockerfile.mlflow
@@ -49,7 +48,6 @@ source .venv/bin/activate         # For Mac/Linux
 Step 2: Install Dependencies
 
 pip install -r requirements.txt
-pip install -r requirements-dev.txt  
 
 DVC Setup:
 
@@ -62,7 +60,19 @@ git add .
 git commit -m "Initialized DVC and tracked data"
 
 Step 2: Setup Google Drive as Remote and Push
+Google Drive Credential Setup (For DVC):
+To enable DVC to sync data with Google Drive, we used a service account credential file called gdrive-creds.json.
 
+- This file authorizes secure access to the shared Google Drive folder used as a remote.
+
+- It contains sensitive private keys, so we do not push it to GitHub.
+
+- The file is included in .gitignore to protect our secrets and follow best security practices.
+
+- If someone wants to run this project with DVC, they need to create their own gdrive-creds.json from a Google Cloud service account and place it in the root directory.
+
+dvc remote modify gdrive_remote gdrive_use_service_account true
+dvc remote modify gdrive_remote gdrive_service_account_json_file_path gdrive-creds.json
 dvc remote add -d gdrive_remote gdrive://your_drive_id_here
 dvc push
 
@@ -87,6 +97,8 @@ make preprocess    # Only preprocessing
 make train         # Only training
 make evaluate      # Only evaluation
 make predict       # Make predictions from CLI
+
+
 
 MLflow Setup for Tracking:
 
@@ -137,9 +149,13 @@ http://127.0.0.1:8000
 
 Docker Image Links :
 
-ML App Docker Image: <https://hub.docker.com/repository/docker/jasnoor709/mlapp/general>
-MLflow Docker Image: <https://hub.docker.com/repository/docker/jasnoor709/mlflow/general>
+ML App Docker Image: <https://hub.docker.com/repository/docker/jasnoor709/docker-mlapp/general>
+MLflow Docker Image: <https://hub.docker.com/repository/docker/jasnoor709/docker-mlflow/general>
 or docker pull jasnoor709/mlflow:latest
+
+Pull via CLI:
+docker pull jasnoor709/docker-mlapp:latest  
+docker pull jasnoor709/docker-mlflow:latest
 
 Git and DVC Version Control:
 

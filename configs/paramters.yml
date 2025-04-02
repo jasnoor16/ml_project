@@ -8,7 +8,7 @@ dvc:
 
 mlflow:
   experiment_name: "ML_Project_Training"
-  tracking_uri: "http://127.0.0.1:8000"
+  tracking_uri: "http://mlflow:8000"
   artifact_location: "./mlruns"
 
 train:

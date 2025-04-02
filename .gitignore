@@ -6,3 +6,5 @@ mlruns/
 .dvc/cache/
 mlflow.db
 mlruns.db
+gdrive-creds.json
+

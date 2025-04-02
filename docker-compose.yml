@@ -25,6 +25,7 @@ services:
       - "8000:8000"
     volumes:
       - ./mlruns:/mlflow/mlruns
+      - ./mlflow.db:/mlflow/mlflow.db
     networks:
       - ml-network
 
