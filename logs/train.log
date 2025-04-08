@@ -16,3 +16,4 @@
 2025-04-02 03:33:40,393 - __main__ - INFO - Decision_Tree training completed.
 2025-04-02 03:33:40,394 - __main__ - INFO - All models trained and saved.
 2025-04-02 03:33:40,394 - __main__ - INFO - Training completed.
+2025-04-04 01:10:21,602 - __main__ - ERROR - Error loading data: [Errno 2] No such file or directory: './data/processed/X_train.npy'

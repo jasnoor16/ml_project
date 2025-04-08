@@ -16,3 +16,134 @@
 2025-04-02 03:31:11,387 - werkzeug - WARNING -  * Debugger is active!
 2025-04-02 03:31:11,397 - werkzeug - INFO -  * Debugger PIN: 171-227-982
 2025-04-02 03:31:55,403 - werkzeug - INFO - 172.18.0.1 - - [02/Apr/2025 03:31:55] "GET /health_status HTTP/1.1" 200 -
+2025-04-04 00:26:40,144 - ml_app.api - INFO - Model v1 (Linear Regression) loaded successfully.
+2025-04-04 00:26:40,231 - ml_app.api - INFO - Model v2 (Random Forest) loaded successfully.
+2025-04-04 00:26:40,232 - ml_app.api - INFO - Starting ML Prediction API on port 9999...
+2025-04-04 00:26:40,251 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:9999
+ * Running on http://172.17.0.5:9999
+2025-04-04 00:26:40,251 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-04-04 00:26:40,252 - werkzeug - INFO -  * Restarting with stat
+2025-04-04 00:26:41,484 - ml_app.api - INFO - Model v1 (Linear Regression) loaded successfully.
+2025-04-04 00:26:41,578 - ml_app.api - INFO - Model v2 (Random Forest) loaded successfully.
+2025-04-04 00:26:41,579 - ml_app.api - INFO - Starting ML Prediction API on port 9999...
+2025-04-04 00:26:41,586 - werkzeug - WARNING -  * Debugger is active!
+2025-04-04 00:26:41,587 - werkzeug - INFO -  * Debugger PIN: 400-125-337
+2025-04-04 00:27:25,308 - werkzeug - INFO - 172.17.0.1 - - [04/Apr/2025 00:27:25] "GET /ml_project_home HTTP/1.1" 200 -
+2025-04-04 00:27:25,400 - werkzeug - INFO - 172.17.0.1 - - [04/Apr/2025 00:27:25] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-04-04 00:27:39,317 - werkzeug - INFO - 172.17.0.1 - - [04/Apr/2025 00:27:39] "[33mGET /metrics HTTP/1.1[0m" 404 -
+2025-04-04 01:09:09,221 - ml_app.api - INFO - Model v1 (Linear Regression) loaded successfully.
+2025-04-04 01:09:09,329 - ml_app.api - INFO - Model v2 (Random Forest) loaded successfully.
+2025-04-04 01:09:09,332 - ml_app.api - INFO - Starting ML Prediction API on port 9999...
+2025-04-04 01:09:09,367 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:9999
+ * Running on http://172.17.0.5:9999
+2025-04-04 01:09:09,367 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-04-04 01:09:09,368 - werkzeug - INFO -  * Restarting with stat
+2025-04-04 01:09:11,298 - ml_app.api - INFO - Model v1 (Linear Regression) loaded successfully.
+2025-04-04 01:09:11,454 - ml_app.api - INFO - Model v2 (Random Forest) loaded successfully.
+2025-04-04 01:09:11,463 - ml_app.api - INFO - Starting ML Prediction API on port 9999...
+2025-04-04 01:09:11,485 - werkzeug - WARNING -  * Debugger is active!
+2025-04-04 01:09:11,493 - werkzeug - INFO -  * Debugger PIN: 167-599-266
+2025-04-08 07:16:37,723 - ml_app.api - INFO - Models loaded.
+2025-04-08 07:16:37,729 - ml_app.api - INFO - Starting ML Prediction API on port 9999...
+2025-04-08 07:16:37,759 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:9999
+ * Running on http://172.17.0.3:9999
+2025-04-08 07:16:37,759 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-04-08 07:16:37,761 - werkzeug - INFO -  * Restarting with stat
+2025-04-08 07:16:39,314 - ml_app.api - INFO - Models loaded.
+2025-04-08 07:16:39,318 - ml_app.api - INFO - Starting ML Prediction API on port 9999...
+2025-04-08 07:16:39,329 - werkzeug - WARNING -  * Debugger is active!
+2025-04-08 07:16:39,330 - werkzeug - INFO -  * Debugger PIN: 133-267-208
+2025-04-08 07:17:09,726 - werkzeug - INFO - 172.17.0.1 - - [08/Apr/2025 07:17:09] "[33mGET /metrics HTTP/1.1[0m" 404 -
+2025-04-08 07:19:46,055 - werkzeug - INFO -  * Detected change in '/app/src/predict_api.py', reloading
+2025-04-08 07:19:46,328 - werkzeug - INFO -  * Restarting with stat
+2025-04-08 07:19:48,131 - ml_app.api - INFO - Models loaded.
+2025-04-08 07:19:48,136 - ml_app.api - INFO - Starting ML Prediction API on port 9999...
+2025-04-08 07:19:48,147 - werkzeug - WARNING -  * Debugger is active!
+2025-04-08 07:19:48,148 - werkzeug - INFO -  * Debugger PIN: 133-267-208
+2025-04-08 07:20:26,754 - ml_app.api - INFO - Models loaded.
+2025-04-08 07:20:26,762 - ml_app.api - INFO - Starting ML Prediction API on port 9999...
+2025-04-08 07:20:26,786 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:9999
+ * Running on http://172.17.0.3:9999
+2025-04-08 07:20:26,786 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-04-08 07:20:26,788 - werkzeug - INFO -  * Restarting with stat
+2025-04-08 07:20:28,364 - ml_app.api - INFO - Models loaded.
+2025-04-08 07:20:28,369 - ml_app.api - INFO - Starting ML Prediction API on port 9999...
+2025-04-08 07:20:28,379 - werkzeug - WARNING -  * Debugger is active!
+2025-04-08 07:20:28,380 - werkzeug - INFO -  * Debugger PIN: 269-107-916
+2025-04-08 07:20:32,867 - werkzeug - INFO - 172.17.0.1 - - [08/Apr/2025 07:20:32] "GET /metrics HTTP/1.1" 200 -
+2025-04-08 16:48:02,488 - ml_app.api - INFO - Models loaded.
+2025-04-08 16:48:02,495 - ml_app.api - INFO - Starting ML Prediction API on port 9999...
+2025-04-08 16:48:02,535 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:9999
+ * Running on http://172.17.0.3:9999
+2025-04-08 16:48:02,535 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-04-08 16:48:02,537 - werkzeug - INFO -  * Restarting with stat
+2025-04-08 16:48:03,702 - ml_app.api - INFO - Models loaded.
+2025-04-08 16:48:03,705 - ml_app.api - INFO - Starting ML Prediction API on port 9999...
+2025-04-08 16:48:03,714 - werkzeug - WARNING -  * Debugger is active!
+2025-04-08 16:48:03,721 - werkzeug - INFO -  * Debugger PIN: 108-208-450
+2025-04-08 16:56:18,837 - ml_app.api - INFO - Model v1 (Linear Regression) loaded successfully.
+2025-04-08 16:56:18,916 - ml_app.api - INFO - Model v2 (Random Forest) loaded successfully.
+2025-04-08 16:56:18,918 - ml_app.api - INFO - Starting ML Prediction API on port 9999...
+2025-04-08 16:56:18,959 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:9999
+ * Running on http://172.18.0.4:9999
+2025-04-08 16:56:18,959 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-04-08 16:56:18,960 - werkzeug - INFO -  * Restarting with stat
+2025-04-08 16:56:20,031 - ml_app.api - INFO - Model v1 (Linear Regression) loaded successfully.
+2025-04-08 16:56:20,091 - ml_app.api - INFO - Model v2 (Random Forest) loaded successfully.
+2025-04-08 16:56:20,093 - ml_app.api - INFO - Starting ML Prediction API on port 9999...
+2025-04-08 16:56:20,113 - werkzeug - WARNING -  * Debugger is active!
+2025-04-08 16:56:20,114 - werkzeug - INFO -  * Debugger PIN: 896-258-937
+2025-04-08 17:00:00,820 - ml_app.api - INFO - Model v1 (Linear Regression) loaded successfully.
+2025-04-08 17:00:00,872 - ml_app.api - INFO - Model v2 (Random Forest) loaded successfully.
+2025-04-08 17:00:00,874 - ml_app.api - INFO - Starting ML Prediction API on port 9999...
+2025-04-08 17:00:00,904 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:9999
+ * Running on http://172.18.0.4:9999
+2025-04-08 17:00:00,904 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-04-08 17:00:00,905 - werkzeug - INFO -  * Restarting with stat
+2025-04-08 17:00:01,864 - ml_app.api - INFO - Model v1 (Linear Regression) loaded successfully.
+2025-04-08 17:00:01,933 - ml_app.api - INFO - Model v2 (Random Forest) loaded successfully.
+2025-04-08 17:00:01,937 - ml_app.api - INFO - Starting ML Prediction API on port 9999...
+2025-04-08 17:00:01,950 - werkzeug - WARNING -  * Debugger is active!
+2025-04-08 17:00:01,951 - werkzeug - INFO -  * Debugger PIN: 874-672-773
+2025-04-08 19:32:46,988 - ml_app.api - INFO - Model v1 (Linear Regression) loaded successfully.
+2025-04-08 19:32:47,200 - ml_app.api - INFO - Model v2 (Random Forest) loaded successfully.
+2025-04-08 19:32:47,203 - ml_app.api - INFO - Starting ML Prediction API on port 9999...
+2025-04-08 19:32:47,302 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:9999
+ * Running on http://172.18.0.4:9999
+2025-04-08 19:32:47,302 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-04-08 19:32:47,307 - werkzeug - INFO -  * Restarting with stat
+2025-04-08 19:32:49,599 - ml_app.api - INFO - Model v1 (Linear Regression) loaded successfully.
+2025-04-08 19:32:49,763 - ml_app.api - INFO - Model v2 (Random Forest) loaded successfully.
+2025-04-08 19:32:49,765 - ml_app.api - INFO - Starting ML Prediction API on port 9999...
+2025-04-08 19:32:49,778 - werkzeug - WARNING -  * Debugger is active!
+2025-04-08 19:32:49,779 - werkzeug - INFO -  * Debugger PIN: 172-635-394
+2025-04-08 19:38:09,027 - ml_app.api - INFO - Model v1 (Linear Regression) loaded successfully.
+2025-04-08 19:38:09,120 - ml_app.api - INFO - Model v2 (Random Forest) loaded successfully.
+2025-04-08 19:38:09,124 - ml_app.api - INFO - Starting ML Prediction API on port 9999...
+2025-04-08 19:38:09,152 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:9999
+ * Running on http://172.18.0.5:9999
+2025-04-08 19:38:09,152 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-04-08 19:38:09,153 - werkzeug - INFO -  * Restarting with stat
+2025-04-08 19:38:10,638 - ml_app.api - INFO - Model v1 (Linear Regression) loaded successfully.
+2025-04-08 19:38:10,728 - ml_app.api - INFO - Model v2 (Random Forest) loaded successfully.
+2025-04-08 19:38:10,731 - ml_app.api - INFO - Starting ML Prediction API on port 9999...
+2025-04-08 19:38:10,744 - werkzeug - WARNING -  * Debugger is active!
+2025-04-08 19:38:10,745 - werkzeug - INFO -  * Debugger PIN: 123-697-242

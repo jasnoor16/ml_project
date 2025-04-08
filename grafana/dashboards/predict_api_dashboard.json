@@ -1,0 +1,35 @@
+{
+    "id": null,
+    "title": "Prediction API Metrics",
+    "timezone": "browser",
+    "panels": [
+      {
+        "type": "graph",
+        "title": "Prediction Request Count (Success vs Error)",
+        "targets": [
+          {
+            "expr": "rate(model_prediction_requests_total[1m])",
+            "legendFormat": "{{status}}",
+            "refId": "A"
+          }
+        ],
+        "gridPos": { "x": 0, "y": 0, "w": 12, "h": 6 }
+      },
+      {
+        "type": "graph",
+        "title": "95th Percentile Prediction Time",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, sum(rate(model_prediction_duration_seconds_bucket[5m])) by (le))",
+            "legendFormat": "p95",
+            "refId": "B"
+          }
+        ],
+        "gridPos": { "x": 12, "y": 0, "w": 12, "h": 6 }
+      }
+    ],
+    "schemaVersion": 26,
+    "version": 1,
+    "refresh": "10s"
+  }
+  
