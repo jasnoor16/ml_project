@@ -1,8 +1,10 @@
+# Dockerfile.mlapp
+
 FROM python:3.9
 
 WORKDIR /app
 
-# Install system dependencies first
+# Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libatlas-base-dev \
@@ -16,19 +18,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy rest of the application code
+# Copy app code
 COPY src/ ./src/
 COPY models/ ./models/
 COPY data/ ./data/
 COPY configs/ ./configs/
-COPY Makefile .
 COPY src/ml_utils/ ./src/ml_utils/
+COPY Makefile .
 
-# Set environment variable for logging
+# Logging directory
 ENV LOG_DIR=/app/logs
-
 RUN mkdir -p /app/logs
 
+# Expose prediction API and training monitor ports
 EXPOSE 9999
+EXPOSE 8002
 
+# Default: run the API
 CMD ["python", "src/predict_api.py"]

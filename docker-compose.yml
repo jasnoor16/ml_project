@@ -24,11 +24,56 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./mlruns:/mlflow/mlruns
-      - ./mlflow.db:/mlflow/mlflow.db
+      - mlflow-data:/mlflow
     networks:
       - ml-network
+
+  prometheus:
+    image: prom/prometheus:latest
+    platform: linux/amd64
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - ml-network
+    depends_on:
+      - ml-app
+
+  grafana:
+    image: grafana/grafana:latest
+    platform: linux/amd64
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=password
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - grafana-data:/var/lib/grafana
+    networks:
+      - ml-network
+    depends_on:
+      - prometheus
 
 networks:
   ml-network:
     driver: bridge
+
+volumes:
+  mlflow-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local

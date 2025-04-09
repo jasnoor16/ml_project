@@ -13,6 +13,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
 from ml_utils.model_utils import evaluate_model
 import logging
+from src.ml_utils.monitoring import RegressionMonitor  # ✅ NEW
 
 # Set log directory
 log_dir = os.environ.get("LOG_DIR", "logs")
@@ -37,6 +38,10 @@ class Trainer:
         self.processed_dir = "./data/processed/"
         self.models_dir = "./models/"
         os.makedirs(self.models_dir, exist_ok=True)
+
+        # ✅ Initialize monitoring
+        self.monitor = RegressionMonitor(port=8002)
+        self.monitor.start_server()
 
         # Load preprocessed data
         try:
@@ -95,11 +100,21 @@ class Trainer:
 
             mlflow.sklearn.log_model(pipeline, model_name)
 
+            # Evaluate model
             mae, rmse, r2 = evaluate_model(pipeline, self.X_test, self.y_test)
 
             mlflow.log_metric("MAE", mae)
             mlflow.log_metric("RMSE", rmse)
             mlflow.log_metric("R2_Score", r2)
+
+            # ✅ Record metrics with Prometheus monitor
+            self.monitor.record_metrics(
+                mse=rmse**2,     # MSE = RMSE squared
+                rmse=rmse,
+                mae=mae,
+                r_squared=r2,
+                feature_importance=None  # Add if you calculate it later
+            )
 
         logger.info(f"{model_name} training completed.")
         print(f"{model_name} training completed.")

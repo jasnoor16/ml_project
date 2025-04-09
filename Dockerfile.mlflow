@@ -1,8 +1,10 @@
+# Dockerfile.mlflow
+
 FROM python:3.9
 
 WORKDIR /mlflow
 
-# Install system packages required for MLflow
+# System tools
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     default-libmysqlclient-dev \
@@ -12,19 +14,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     && rm -rf /var/lib/apt/lists/*
 
-# Upgrade pip and tools
+# Upgrade pip & install MLflow
 RUN pip install --upgrade pip setuptools wheel
-
-# Install MLflow with PyMySQL
 RUN pip install mlflow pymysql
 
-# Create mlruns directory 
+# Prepare volume directory
 RUN mkdir -p /mlflow/mlruns
 
-# Copy optional database if needed
-COPY mlflow.db mlflow.db
 
-# Expose MLflow port
+# Expose MLflow UI port
 EXPOSE 8000
 
+# Run MLflow server
 CMD ["mlflow", "ui", "--host", "0.0.0.0", "--port", "8000"]
