@@ -2,7 +2,7 @@ global:
   scrape_interval: 15s
   evaluation_interval: 15s
 
-# Load alert rules (Step 6)
+# Load alert rules
 rule_files:
   - "/etc/prometheus/rules/ml_alerts.yml"
 
@@ -21,7 +21,7 @@ scrape_configs:
     scrape_interval: 5s
     static_configs:
       - targets:
-        - 'ml-app:8002'   # Train monitor runs inside ml-app container
+          - 'training-metrics:8002'
     metrics_path: /metrics
     scheme: http
     scrape_timeout: 3s

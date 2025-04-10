@@ -1,0 +1,33 @@
+{
+    "title": "Prediction API Dashboard",
+    "panels": [
+      {
+        "type": "graph",
+        "title": "Prediction Duration (95th Percentile)",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, sum(rate(model_prediction_duration_seconds_bucket[5m])) by (le, model_version))",
+            "legendFormat": "Duration (s)",
+            "refId": "A"
+          }
+        ],
+        "gridPos": { "x": 0, "y": 0, "w": 24, "h": 6 }
+      },
+      {
+        "type": "graph",
+        "title": "API Request Count by Status",
+        "targets": [
+          {
+            "expr": "sum by(status) (rate(model_prediction_requests_total[5m]))",
+            "legendFormat": "{{status}}",
+            "refId": "B"
+          }
+        ],
+        "gridPos": { "x": 0, "y": 6, "w": 24, "h": 6 }
+      }
+    ],
+    "schemaVersion": 26,
+    "version": 1,
+    "refresh": "10s"
+  }
+  

@@ -1,7 +1,5 @@
 {
-    "id": null,
-    "title": "Model Training Metrics",
-    "timezone": "browser",
+    "title": "Training Dashboard",
     "panels": [
       {
         "type": "graph",
@@ -17,7 +15,7 @@
       },
       {
         "type": "graph",
-        "title": "R-squared Over Time",
+        "title": "R² Over Time",
         "targets": [
           {
             "expr": "regression_r_squared",

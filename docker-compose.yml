@@ -7,6 +7,7 @@ services:
       dockerfile: Dockerfile.mlapp
     ports:
       - "9999:9999"
+      - "8002:8002"
     volumes:
       - ./logs:/app/logs
       - ./data/processed:/app/data/processed
@@ -29,8 +30,8 @@ services:
       - ml-network
 
   prometheus:
-    image: prom/prometheus:latest
-    platform: linux/amd64
+    image: prom/prometheus:v2.52.0
+    platform: linux/amd64 
     ports:
       - "9090:9090"
     volumes:
@@ -38,12 +39,6 @@ services:
       - prometheus-data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--web.enable-lifecycle'
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     networks:
       - ml-network
     depends_on:
