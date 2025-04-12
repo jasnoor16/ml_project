@@ -2,6 +2,9 @@
 
 from prometheus_client import start_http_server, Gauge, Counter
 import threading
+import logging
+
+logger = logging.getLogger(__name__)
 
 class TrainingMonitor:
     def __init__(self, port=8002):
@@ -10,14 +13,21 @@ class TrainingMonitor:
 
     def start_server(self):
         if not self.started:
-            threading.Thread(
-                target=start_http_server,
-                args=(self.port,),
-                kwargs={"addr": "0.0.0.0"},  # 🔧 critical for Docker access
-                daemon=True
-            ).start()
-            self.started = True
+            print(f"✅ Starting Prometheus monitoring server on port {self.port}...")
+            logger.info(f"✅ Starting Prometheus monitoring server on port {self.port}...")
 
+            def launch():
+                try:
+                    start_http_server(self.port, addr="0.0.0.0")
+                except Exception as e:
+                    print(f"❌ Failed to start Prometheus server: {e}")
+                    logger.error(f"❌ Failed to start Prometheus server: {e}")
+
+            threading.Thread(target=launch, daemon=True).start()
+            self.started = True
+        else:
+            print("ℹ️ Prometheus server already running.")
+            logger.info("ℹ️ Prometheus server already running.")
 
 class RegressionMonitor(TrainingMonitor):
     def __init__(self, port=8002):
@@ -36,6 +46,7 @@ class RegressionMonitor(TrainingMonitor):
 
     def record_metrics(self, mse=None, rmse=None, mae=None, r_squared=None, feature_importance=None):
         """Push regression metrics to Prometheus"""
+        print("📊 Recording regression metrics to Prometheus...")
         if mse is not None:
             self.mse.set(mse)
         if rmse is not None:

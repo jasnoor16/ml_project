@@ -26,7 +26,8 @@ logger = logging.getLogger("ml_app.api")
 
 # Flask App
 app = Flask(__name__)
-metrics = PrometheusMetrics(app)
+metrics = PrometheusMetrics(app, path="/metrics")
+
 
 # Custom Prometheus metrics
 model_version = "1.0"
@@ -145,6 +146,13 @@ def monitor_resources():
         memory_usage.set(process.memory_info().rss)
         cpu_usage.set(process.cpu_percent())
         time.sleep(15)
+
+from prometheus_client import REGISTRY, generate_latest
+
+@app.route('/metrics')
+def custom_metrics():
+    return generate_latest(REGISTRY), 200, {'Content-Type': 'text/plain'}
+
 
 if __name__ == '__main__':
     logger.info("Starting ML Prediction API on port 9999...")
