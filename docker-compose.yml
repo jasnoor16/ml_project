@@ -5,6 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.mlapp
+    container_name: app
     ports:
       - "9999:9999"
       - "8002:8002"
@@ -22,6 +23,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.mlflow
+    container_name: mlflow
     ports:
       - "8000:8000"
     volumes:
@@ -31,7 +33,7 @@ services:
 
   prometheus:
     image: prom/prometheus:v2.52.0
-    platform: linux/amd64 
+    container_name: prometheus
     ports:
       - "9090:9090"
     volumes:
@@ -45,8 +47,8 @@ services:
       - ml-app
 
   grafana:
-    image: grafana/grafana:latest
-    platform: linux/amd64
+    image: grafana/grafana:10.0.3
+    container_name: grafana
     ports:
       - "3000:3000"
     environment:
@@ -56,6 +58,7 @@ services:
     volumes:
       - ./grafana/provisioning:/etc/grafana/provisioning
       - grafana-data:/var/lib/grafana
+
     networks:
       - ml-network
     depends_on:
@@ -67,8 +70,5 @@ networks:
 
 volumes:
   mlflow-data:
-    driver: local
   prometheus-data:
-    driver: local
   grafana-data:
-    driver: local

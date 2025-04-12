@@ -111,6 +111,8 @@ ct = ColumnTransformer(
 # Splitting Data into Features and Target
 
 # The target column (Donation Bags Collected) is what we want to predict.
+df_2023.drop(columns=["Comments"], errors="ignore", inplace=True)
+
 X_train = df_2023.drop(columns=[TARGET])  # Features for 2023
 y_train = df_2023[TARGET]  # Target variable for 2023
 X_test = df_2024.drop(columns=[TARGET])  # Features for 2024
