@@ -62,6 +62,12 @@ curl -X POST http://127.0.0.1:9999/v1/predict \
 Sample Response:  
 {"predicted_donation_bags": 42}
 
+curl -X POST http://localhost:9999/v1/predict \
+-H "Content-Type: application/json" \
+-d '{"features": ["Riverbend Stake", "Londonderry", 3, 2, 1.5, 30, "No", "2", 50]}'
+
+Response : {"predicted_donation_bags": 25}
+
 Version 2: Random Forest  
 URL: /v2/predict  
 Method: POST  
@@ -113,4 +119,5 @@ curl -X POST http://127.0.0.1:9999/v1/predict \
 Expected Response:  
 {"error": "could not convert string to float: 'three'"}
 
-End of documentation.
+## Conclusion
+This API allows you to make predictions about donation bag collection using machine learning models. You can interact with it by sending POST requests with the required features to either /v1/predict (Linear Regression) or /v2/predict (Random Forest). The API handles preprocessing, prediction, and error handling automatically. Additionally, it includes health checks and basic usage documentation for easy integration.

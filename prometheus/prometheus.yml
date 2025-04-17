@@ -18,10 +18,12 @@ scrape_configs:
     scheme: http
     scrape_timeout: 3s
 
-  - job_name: 'model-training'  
+  - job_name: 'model-training'
     scrape_interval: 5s
     static_configs:
-      - targets: ['app:8002']
+      - targets: 
+        - 'training-metrics:8002'
     metrics_path: /metrics
     scheme: http
     scrape_timeout: 3s
+

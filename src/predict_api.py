@@ -34,6 +34,12 @@ model_version = "1.0"
 prediction_requests = Counter(
     'model_prediction_requests_total', 'Total prediction requests', ['model_version', 'status']
 )
+
+# Custom Prometheus error metric
+prediction_error_requests = Counter(
+    'model_prediction_requests_error_total', 'Total prediction error requests', ['model_version']
+)
+
 prediction_time = Histogram(
     'model_prediction_duration_seconds', 'Time taken to predict', ['model_version']
 )
@@ -71,6 +77,7 @@ def process_prediction(model):
         data = request.get_json()
         logger.info(f"Received prediction request: {data}")
         if "features" not in data:
+            prediction_error_requests.labels(model_version=model_version).inc()  # Increment error counter
             return jsonify({"error": "Missing 'features' key"}), 400
 
         features = data["features"]
@@ -79,6 +86,7 @@ def process_prediction(model):
             "Distance", "Time Spent", "Completed More Than One Route", "Routes Completed", "Doors in Route"
         ]
         if len(features) != len(expected_columns):
+            prediction_error_requests.labels(model_version=model_version).inc()  # Increment error counter
             return jsonify({"error": f"Expected {len(expected_columns)} features, got {len(features)}"}), 400
 
         feature_df = pd.DataFrame([features], columns=expected_columns)
@@ -99,6 +107,7 @@ def process_prediction(model):
 
     except Exception as e:
         logger.error(f"Prediction error: {e}", exc_info=True)
+        prediction_error_requests.labels(model_version=model_version).inc()  # Increment error counter
         prediction_requests.labels(model_version=model_version, status="error").inc()
         return jsonify({"error": str(e)}), 500
 

@@ -1,13 +1,12 @@
 #!/bin/bash
+# Script to run training with metrics exposed to Prometheus
 
+# Clean up any previous training container
 docker rm -f training-metrics 2>/dev/null
 
 echo "Starting training with metrics monitoring..."
 
-docker run \
-  --name training-metrics \
-  --network=ml_project_ml-network \
-  ml_project-ml-app \
-  python src/train.py
+# Run the container with a fixed name that Prometheus can discover
+docker-compose run --name training-metrics ml-app python3 src/train.py "$@"
 
-echo "TRAINING COMPLETED!!"
+echo "Training completed!"

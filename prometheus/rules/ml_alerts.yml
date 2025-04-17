@@ -3,19 +3,19 @@ groups:
     rules:
       # High prediction error rate
       - alert: HighErrorRate
-        expr: sum(rate(model_prediction_requests_total{status="error"}[5m])) 
-              / sum(rate(model_prediction_requests_total[5m])) > 0.1
-        for: 5m
+        expr: sum(rate(model_prediction_requests_error_total[1m])) / sum(rate(model_prediction_requests_total[1m])) > 0
+
+        for: 5s
         labels:
           severity: warning
         annotations:
-          summary: "High prediction error rate (> 10%)"
-          description: "Prediction API error rate is {{ $value | humanizePercentage }} over the last 5 minutes."
+          summary: "High prediction error rate"
+          description: "Prediction API error rate is {{ $value | humanizePercentage }}."
 
       # Slow API response
       - alert: SlowPredictionResponse
         expr: histogram_quantile(0.95, sum(rate(model_prediction_duration_seconds_bucket[5m])) by (le, model_version)) > 1.0
-        for: 5m
+        for: 5s
         labels:
           severity: warning
         annotations:

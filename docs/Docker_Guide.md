@@ -1,87 +1,157 @@
-Docker Documentation for Alberta Food Drive ML Project
+## Docker Guide for Edmonton Food Drive ML Project
 
-This project uses Docker to containerize both the Machine Learning prediction API and the MLflow tracking server. This allows the application to be deployed and run consistently on any system, regardless of local setup or operating system.
+In this section, we’ll walk you through how we used **Docker** and **Docker Compose** to run all components of our machine learning project in isolated containers. This ensures everything works seamlessly and is easy to deploy and scale.
 
-Why We Used Docker:
+### What We Did
 
-- To make sure the same environment runs across all machines
-- To separate the ML API from MLflow tracking
-- To avoid installing everything manually
-- To support reproducibility, which is important in MLOps
+We containerized every major component of the project, including the **Flask API**, **MLflow server**, **Prometheus monitoring**, and **Grafana dashboards**. By using **Docker Compose**, we orchestrate all these containers with a single command.
 
-What We Did:
+### Docker Setup
 
-1. We created two separate Dockerfiles:
-   - Dockerfile.mlapp: For the Flask API that handles model predictions
-   - Dockerfile.mlflow: For the MLflow server to track experiments and models
+1. **Install Docker**:
 
-2. We created a docker-compose.yml file to run both containers together. This file connects both services using a shared network and assigns specific ports to each one.
+   First, make sure **Docker** and **Docker Compose** are installed on your machine. Follow the official guides if you haven't installed them yet: 
+   - [Install Docker](https://docs.docker.com/get-docker/)
+   - [Install Docker Compose](https://docs.docker.com/compose/install/)
 
-3. We exposed ports:
-   - 9999 for the Flask app
-   - 8000 for the MLflow UI
+2. **Dockerfile Setup**:
 
-4. We mounted volumes:
-   - logs/ is mounted into the container to collect logs from the API and training script
-   - data/processed/ is mounted to allow the API to access preprocessing artifacts (like encoders and scalers)
+   - **Flask API**: This container runs our API which serves the predictions. We used the following Dockerfile for the **Flask API** (`Dockerfile.mlapp`):
+   
+     ```dockerfile
+     FROM python:3.8-slim
+     WORKDIR /app
+     COPY requirements.txt /app/
+     RUN pip install --no-cache-dir -r requirements.txt
+     COPY . /app
+     CMD ["python3", "src/predict_api.py"]
+     ```
 
-5. We set up environment variables:
-   - LOG_DIR is used inside both Python scripts to store logs in the right place
-   - MLFLOW_TRACKING_URI is passed so training logs go to the MLflow server running in the container
+     This Dockerfile installs all the necessary Python dependencies and runs the `predict_api.py` script, which serves the predictions from our models.
 
-6. We used docker-compose up --build to build and launch everything together.
+   - **MLflow Server**: For model tracking and experiment management, we containerized **MLflow** in another Dockerfile (`Dockerfile.mlflow`):
 
-7. We tested all endpoints using curl and Postman to confirm that predictions and MLflow logging work correctly inside the container.
+     ```dockerfile
+     FROM python:3.8-slim
+     WORKDIR /app
+     COPY requirements.txt /app/
+     RUN pip install --no-cache-dir -r requirements.txt
+     COPY . /app
+     CMD ["mlflow", "ui", "--host", "0.0.0.0", "--port", "8000"]
+     ```
 
-How to Build and Run:
+     This starts the **MLflow UI** on port `8000` to track and manage our model experiments.
 
-Step 1: Run the following command in the project root:
+3. **Prometheus and Grafana Setup**:
 
+   - **Prometheus**: We used the official **Prometheus** image to collect metrics about system performance. Here’s the setup in **docker-compose.yml**:
+
+     ```yaml
+     prometheus:
+       image: prom/prometheus:v2.52.0
+       ports:
+         - "9090:9090"
+       volumes:
+         - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+     ```
+
+     This tells **Prometheus** to collect metrics about the system and expose them on port `9090`.
+
+   - **Grafana**: We also used **Grafana** to visualize the data collected by **Prometheus**. The setup in `docker-compose.yml` is:
+
+     ```yaml
+     grafana:
+       image: grafana/grafana:7.5.0
+       ports:
+         - "3000:3000"
+       environment:
+         - GF_SECURITY_ADMIN_PASSWORD=admin
+     ```
+
+     This will start **Grafana** on port `3000`, and you can log in using `admin` as the username and password.
+
+4. **Running All Containers**:
+
+   The real magic happens when we bring all these components together using **Docker Compose**. The `docker-compose.yml` file manages all four services (`Flask API`, `MLflow`, `Prometheus`, and `Grafana`):
+
+   ```yaml
+   version: '3'
+   services:
+     app:
+       build:
+         context: .
+         dockerfile: Dockerfile.mlapp
+       ports:
+         - "9999:9999"
+       depends_on:
+         - mlflow
+         - prometheus
+         - grafana
+
+     mlflow:
+       build:
+         context: .
+         dockerfile: Dockerfile.mlflow
+       ports:
+         - "8000:8000"
+
+     prometheus:
+       image: prom/prometheus:v2.52.0
+       ports:
+         - "9090:9090"
+       volumes:
+         - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+
+     grafana:
+       image: grafana/grafana:7.5.0
+       ports:
+         - "3000:3000"
+       environment:
+         - GF_SECURITY_ADMIN_PASSWORD=admin
+
+   This docker-compose.yml file tells Docker to:
+
+   Build the Flask API image from Dockerfile.mlapp
+
+   Build the MLflow image from Dockerfile.mlflow
+
+   Start Prometheus and Grafana from their official images
+
+## Starting the Containers:
+
+To start all the containers, run this simple command:
 docker-compose up --build
 
-This builds the Docker images and starts both containers.
+This command will:
 
-Once running:
-- Open http://127.0.0.1:9999 to access the prediction API
-- Open http://127.0.0.1:8000 to access MLflow UI
+- Build the Docker images
 
-What to Do if Build Breaks:
+- Start all the containers
 
-Sometimes Docker build breaks due to cache or version issues. If that happens:
+- Map the necessary ports for each container:
 
+Flask API: http://localhost:9999
+
+MLflow UI: http://localhost:8000
+
+Prometheus UI: http://localhost:9090
+
+Grafana UI: http://localhost:3000
+
+**Monitoring with Metrics:**
+We also included the Prometheus metrics to monitor the performance of the Flask API. The /metrics endpoint, available at http://localhost:9999/metrics, serves the metrics data.
+
+The Prometheus container is set up to collect data like memory usage, CPU usage, and prediction latency. Grafana fetches these metrics and visualizes them in real-time on dashboards.
+
+**Running with Metrics:**
+You can run the API with metrics collection by executing the run_with_metrics.sh script:
+
+./run_with_metrics.sh
+This script starts the Prometheus and Flask API servers with metrics collection enabled.
+
+Stop the containers using:
 docker-compose down
-docker system prune -a
-docker-compose up --build
 
-How We Built and Pushed Images to Docker Hub:
 
-After testing locally, we built the Docker images manually and pushed them to Docker Hub for sharing.
-
-Step 1: Log in
-
-docker login
-
-Step 2: Tag and push the Flask API image
-
-docker build -f Dockerfile.mlapp -t jasnoor/ml-app:latest .
-docker tag jasnoor/ml-app:latest docker.io/jasnoor/ml-app:latest
-docker push docker.io/jasnoor/ml-app:latest
-
-Step 3: Tag and push the MLflow image
-
-docker build -f Dockerfile.mlflow -t jasnoor/mlflow:latest .
-docker tag jasnoor/mlflow:latest docker.io/jasnoor/mlflow:latest
-docker push docker.io/jasnoor/mlflow:latest
-
-Docker Image Links (add after pushing):
-
-Flask API Image: <paste-link-here>
-MLflow Image: <paste-link-here>
-
-Key Takeaways:
-
-- Docker helped us isolate our application and run it smoothly without worrying about setup
-- Using Docker Compose made it easier to manage both services (API and MLflow) at the same time
-- This setup supports reproducibility, logging, and easy redeployment for future use
-
-This Docker documentation summarizes what we implemented, why we did it, and how to run everything properly.
+## Conclusion
+With Docker and Docker Compose, we were able to successfully containerize and orchestrate all the services required for this ML project. Flask API, MLflow, Prometheus, and Grafana are all running in isolated containers, and we can monitor the performance of our system through Grafana in real-time.

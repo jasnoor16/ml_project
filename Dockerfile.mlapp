@@ -14,19 +14,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies
-# Copy app code
+# Copy all files into container
 COPY . .
-RUN pip install --no-cache-dir -r requirements.txt
 
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Logging directory
 ENV LOG_DIR=/app/logs
 RUN mkdir -p /app/logs
 
-# Expose prediction API and training monitor ports
+# Expose prediction API and training metrics ports (keep only what you use)
 EXPOSE 9999
-EXPOSE 8002
 
-# Default: run the API
-CMD ["python", "src/predict_api.py"]
+# Default command (no entrypoint now)
+CMD ["python3", "src/predict_api.py"]

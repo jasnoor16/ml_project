@@ -8,7 +8,6 @@ services:
     container_name: app
     ports:
       - "9999:9999"
-      - "8002:8002"
     volumes:
       - ./logs:/app/logs
       - ./data/processed:/app/data/processed
@@ -58,7 +57,6 @@ services:
     volumes:
       - ./grafana/provisioning:/etc/grafana/provisioning
       - grafana-data:/var/lib/grafana
-
     networks:
       - ml-network
     depends_on:
